@@ -13,13 +13,25 @@ export class App {
     this.photos.setState(this.state.photos);
   }
 
-  init() {
+  async init() {
+    const imagesRef = firebase.storage().ref('images');
+    const images = await imagesRef.listAll();
+
+    const photos = [];
+    const getImageURL = async (imageRef) => {
+      const url = await imageRef.getDownloadURL();
+      photos.push(url);
+    };
+
+    const promiseList = [];
+    images.items.forEach((imageRef) => {
+      promiseList.push(getImageURL(imageRef));
+    });
+    await Promise.all(promiseList);
+
     this.setState({
       ...this.state,
-      photos: [
-        { filePath: 'https://source.unsplash.com/random?1', name: '1' },
-        { filePath: 'https://source.unsplash.com/random?2', name: '2' },
-      ],
+      photos,
     });
   }
 }

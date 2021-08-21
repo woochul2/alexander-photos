@@ -17,6 +17,6 @@ export class Photos {
   }
 
   render() {
-    this.$target.innerHTML = this.state.map((photo) => `<img src=${photo.filePath} alt=${photo.name}>`).join('');
+    this.$target.innerHTML = this.state.map((photo) => `<img src=${photo}>`).join('');
   }
 }
