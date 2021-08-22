@@ -7,26 +7,16 @@ export default class App {
 
     this.photos = new Photos({
       $app,
-      initialState: {
-        photos: this.state.photos,
-      },
+      initialState: { photos: this.state.photos },
       onClick: (index) => {
-        this.setState({
-          ...this.state,
-          currentIndex: index,
-        });
+        this.setState({ currentIndex: index });
       },
     });
     this.photoModal = new PhotoModal({
       $app,
-      initialState: {
-        currentIndex: this.state.currentIndex,
-      },
+      initialState: { currentIndex: this.state.currentIndex },
       onClick: () => {
-        this.setState({
-          ...this.state,
-          currentIndex: null,
-        });
+        this.setState({ currentIndex: null });
       },
     });
 
@@ -34,14 +24,13 @@ export default class App {
   }
 
   setState(nextState) {
-    this.state = nextState;
-    this.photos.setState({ photos: this.state.photos });
-    this.photoModal.setState({ currentIndex: this.state.currentIndex });
+    this.state = { ...this.state, ...nextState };
+    if (nextState.hasOwnProperty('photos')) this.photos.setState({ photos: this.state.photos });
+    if (nextState.hasOwnProperty('currentIndex')) this.photoModal.setState({ currentIndex: this.state.currentIndex });
   }
 
   async init() {
     this.setState({
-      ...this.state,
       photos: Array(10).fill(
         'https://images.unsplash.com/photo-1593642532400-2682810df593?ixid=MnwxMjA3fDF8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80'
       ),

@@ -20,8 +20,6 @@ export default class Photos {
   }
 
   setState(nextState) {
-    // FIXME: 리렌더링 시 이미지가 깜빡여서 이렇게 임시 조치 했는데, 수정이 필요함.
-    if (JSON.stringify(this.state) === JSON.stringify(nextState)) return;
     this.state = nextState;
     this.render();
   }
