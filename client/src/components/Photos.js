@@ -26,7 +26,7 @@ export default class Photos {
 
   render() {
     this.$target.innerHTML = this.state.photos
-      .map((photo, index) => `<img src=${photo} class="photo" data-index="${index}">`)
+      .map((photo, index) => `<img src=${photo.file_path} class="photo" data-index="${index}">`)
       .join('');
   }
 }

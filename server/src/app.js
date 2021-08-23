@@ -11,6 +11,11 @@ const app = express();
 
 app.use(morgan('dev'));
 
+app.use((_req, res, next) => {
+  res.header('Access-Control-Allow-Origin', '*');
+  next();
+});
+
 app.use('/images', imagesRoutes);
 
 app.use((_req, _res, next) => {
