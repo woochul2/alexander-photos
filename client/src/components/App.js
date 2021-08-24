@@ -1,11 +1,13 @@
-import { requestImages } from '../api.js';
+import { getImages } from '../api.js';
 import PhotoModal from './PhotoModal.js';
 import Photos from './Photos.js';
+import UploadButton from './UploadButton.js';
 
 export default class App {
   constructor($app) {
     this.state = { photos: [], currentIndex: null };
 
+    this.uploadButton = new UploadButton({ $app });
     this.photos = new Photos({
       $app,
       initialState: { photos: this.state.photos },
@@ -32,7 +34,7 @@ export default class App {
 
   async init() {
     try {
-      const images = await requestImages();
+      const images = await getImages();
       const photos = images.results;
       this.setState({
         photos,

@@ -45,3 +45,7 @@ body {
   width: auto;
   transition: all var(--transition-duration) var(--transition-timing-function);
 }
+
+.upload-form__button {
+  display: none;
+}

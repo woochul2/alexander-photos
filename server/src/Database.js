@@ -24,8 +24,18 @@ export default (function () {
     async find(collectionName) {
       try {
         const database = this.client.db('mongo');
-        const images = database.collection(collectionName);
-        return await images.find({}).toArray();
+        const collection = database.collection(collectionName);
+        return await collection.find({}).toArray();
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    async insertMany(collectionName, data) {
+      try {
+        const database = this.client.db('mongo');
+        const collection = database.collection(collectionName);
+        await collection.insertMany(data);
       } catch (err) {
         console.error(err);
       }
