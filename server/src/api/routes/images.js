@@ -39,20 +39,22 @@ router.get('/', async (_req, res) => {
 });
 
 router.post('/', upload.array('photos'), async (req, res) => {
-  const promiseList = [];
-  const insert = async (photo) => {
+  const promiseFuncs = [];
+  const insertQuery = async (photo) => {
     const image = await Database.findOne('images', photo);
     if (!image) await Database.insertOne('images', photo);
   };
 
-  const photos = req.files.map((file) => {
-    const photo = { filePath: file.originalname };
-    promiseList.push(insert(photo));
+  const exifDatas = typeof req.body.exifDatas === 'string' ? [req.body.exifDatas] : req.body.exifDatas;
+  const photos = req.files.map((file, idx) => {
+    const exifData = JSON.parse(exifDatas[idx]);
+    const photo = { filePath: file.originalname, ...exifData };
+    promiseFuncs.push(insertQuery(photo));
     return photo;
   });
 
   try {
-    await Promise.all(promiseList);
+    await Promise.all(promiseFuncs);
     res.status(201).json({
       message: 'Uploaded images successfully',
       results: photos,

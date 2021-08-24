@@ -1,4 +1,5 @@
 import { postImages } from '../api.js';
+import { getExifData } from '../utils.js';
 
 export default class UploadButton {
   constructor({ $app }) {
@@ -16,9 +17,19 @@ export default class UploadButton {
     this.$target.addEventListener('change', async (event) => {
       const formData = new FormData();
       const files = event.target.files;
+
+      const promiseFuncs = [];
+      const appendFormData = async (file) => {
+        const exifData = await getExifData(file);
+        formData.append('photos', file);
+        formData.append('exifDatas', JSON.stringify(exifData));
+      };
+
       Object.keys(files).forEach((key) => {
-        formData.append('photos', files[key]);
+        promiseFuncs.push(appendFormData(files[key]));
       });
+
+      await Promise.all(promiseFuncs);
       await postImages(formData);
     });
   }
