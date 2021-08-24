@@ -12,7 +12,6 @@ export async function getImages() {
 }
 
 export async function postImages(files) {
-  console.log(files);
   try {
     const response = await fetch(`${API_ENDPOINT}/images`, {
       method: 'POST',

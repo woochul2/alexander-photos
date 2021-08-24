@@ -31,11 +31,21 @@ export default (function () {
       }
     }
 
-    async insertMany(collectionName, data) {
+    async findOne(collectionName, query = {}) {
       try {
         const database = this.client.db('mongo');
         const collection = database.collection(collectionName);
-        await collection.insertMany(data);
+        return await collection.findOne(query);
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    async insertOne(collectionName, data) {
+      try {
+        const database = this.client.db('mongo');
+        const collection = database.collection(collectionName);
+        await collection.insertOne(data);
       } catch (err) {
         console.error(err);
       }

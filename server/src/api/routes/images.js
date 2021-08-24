@@ -32,20 +32,27 @@ const fileFilter = (_req, file, cb) => {
 const upload = multer({ storage, fileFilter });
 
 router.get('/', async (_req, res) => {
-  const results = await Database.find('images');
+  const images = await Database.find('images');
   res.status(200).json({
-    results,
+    results: images,
   });
 });
 
 router.post('/', upload.array('photos'), async (req, res) => {
+  const promiseList = [];
+  const insert = async (photo) => {
+    const image = await Database.findOne('images', photo);
+    if (!image) await Database.insertOne('images', photo);
+  };
+
   const photos = req.files.map((file) => {
-    return {
-      filePath: file.originalname,
-    };
+    const photo = { filePath: file.originalname };
+    promiseList.push(insert(photo));
+    return photo;
   });
+
   try {
-    await Database.insertMany('images', photos);
+    await Promise.all(promiseList);
     res.status(201).json({
       message: 'Uploaded images successfully',
       results: photos,
