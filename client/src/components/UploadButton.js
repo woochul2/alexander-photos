@@ -11,6 +11,7 @@ export default class UploadButton {
   init($app) {
     this.$target.className = 'upload-button';
     this.$target.type = 'file';
+    this.$target.ariaLabel = '이미지 올리기';
     this.$target.multiple = true;
     $app.appendChild(this.$target);
 

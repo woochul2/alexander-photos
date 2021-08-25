@@ -9,7 +9,8 @@
 }
 
 body {
-  padding-right: 1rem;
+  /* FIXME: 모달창 띄우면서 오른쪽 스크롤 바가 없어지면 이미지 배열이 바뀌어서 임시로 설정한 것*/
+  padding-right: 3rem;
 }
 
 .photo {
@@ -42,10 +43,6 @@ body {
 
 .photo-modal__img {
   position: absolute;
-  width: auto;
+  width: 0;
   transition: all var(--transition-duration) var(--transition-timing-function);
-}
-
-.upload-form__button {
-  display: none;
 }

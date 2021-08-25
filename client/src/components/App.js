@@ -1,26 +1,20 @@
 import { getImages } from '../api.js';
-import PhotoModal from './PhotoModal.js';
+import PhotoModals from './PhotoModals.js';
 import Photos from './Photos.js';
 import UploadButton from './UploadButton.js';
 
 export default class App {
   constructor($app) {
-    this.state = { photos: [], currentIndex: null };
+    this.state = { photos: [] };
 
     this.uploadButton = new UploadButton({ $app });
     this.photos = new Photos({
       $app,
       initialState: { photos: this.state.photos },
-      onClick: (index) => {
-        this.setState({ currentIndex: index });
-      },
     });
-    this.photoModal = new PhotoModal({
+    this.photoModals = new PhotoModals({
       $app,
-      initialState: { currentIndex: this.state.currentIndex },
-      onClick: () => {
-        this.setState({ currentIndex: null });
-      },
+      initialState: { photos: this.state.photos },
     });
 
     this.init();
@@ -28,8 +22,10 @@ export default class App {
 
   setState(nextState) {
     this.state = { ...this.state, ...nextState };
-    if (nextState.hasOwnProperty('photos')) this.photos.setState({ photos: this.state.photos });
-    if (nextState.hasOwnProperty('currentIndex')) this.photoModal.setState({ currentIndex: this.state.currentIndex });
+
+    const has = (property) => nextState.hasOwnProperty(property);
+    if (has('photos')) this.photos.setState({ photos: this.state.photos });
+    if (has('photos')) this.photoModals.setState({ photos: this.state.photos });
   }
 
   async init() {
