@@ -49,12 +49,12 @@ router.post('/', upload.array('photos'), async (req, res) => {
   const photos = req.files.map((file, idx) => {
     const exifData = JSON.parse(exifDatas[idx]);
     const photo = { filePath: file.originalname, ...exifData };
-    promiseFuncs.push(insertQuery(photo));
+    promiseFuncs.push({ func: insertQuery, arg: photo });
     return photo;
   });
 
   try {
-    await Promise.all(promiseFuncs);
+    await Promise.all(promiseFuncs.map(({ func, arg }) => func(arg)));
     res.status(201).json({
       message: 'Uploaded images successfully',
       results: photos,

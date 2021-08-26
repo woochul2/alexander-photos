@@ -40,10 +40,10 @@ export default class Header {
       };
 
       Object.keys(files).forEach((key) => {
-        promiseFuncs.push(appendFormData(files[key]));
+        promiseFuncs.push({ func: appendFormData, arg: files[key] });
       });
 
-      await Promise.all(promiseFuncs);
+      await Promise.all(promiseFuncs.map(({ func, arg }) => func(arg)));
       await postImages(formData);
     });
   }
