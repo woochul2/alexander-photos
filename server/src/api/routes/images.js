@@ -35,7 +35,6 @@ router.get('/', async (_req, res) => {
 });
 
 router.post('/', upload.array('photos'), async (req, res) => {
-  const promiseFuncs = [];
   const insertQuery = async (photo) => {
     const image = await Database.findOne('images', photo);
     if (!image) await Database.insertOne('images', photo);
@@ -46,12 +45,15 @@ router.post('/', upload.array('photos'), async (req, res) => {
     cloudinary.v2.uploader.upload(file.path, { use_filename: true, unique_filename: false });
     const exifData = JSON.parse(exifDatas[idx]);
     const photo = { filePath: file.originalname, ...exifData };
-    promiseFuncs.push({ func: insertQuery, arg: photo });
     return photo;
   });
 
   try {
-    await Promise.all(promiseFuncs.map(({ func, arg }) => func(arg)));
+    await Promise.all(
+      photos.reduce((prevList, photo) => {
+        return [...prevList, insertQuery(photo)];
+      }, [])
+    );
     res.status(201).json({
       message: 'Uploaded images successfully',
       results: photos,

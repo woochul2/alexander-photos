@@ -32,18 +32,17 @@ export default class Header {
       const { files } = event.target;
       const formData = new FormData();
 
-      const promiseFuncs = [];
       const appendFormData = async (file) => {
         const exifData = await getExifData(file);
         formData.append('photos', file);
         formData.append('exifDatas', JSON.stringify(exifData));
       };
 
-      Object.keys(files).forEach((key) => {
-        promiseFuncs.push({ func: appendFormData, arg: files[key] });
-      });
-
-      await Promise.all(promiseFuncs.map(({ func, arg }) => func(arg)));
+      await Promise.all(
+        Object.keys(files).reduce((prevList, key) => {
+          return [...prevList, appendFormData(files[key])];
+        }, [])
+      );
       await postImages(formData);
     });
   }
