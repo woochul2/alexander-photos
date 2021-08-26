@@ -1,22 +1,18 @@
-import aws from 'aws-sdk';
 import express from 'express';
 import multer from 'multer';
-import multerS3 from 'multer-s3';
 import Database from '../../Database.js';
+import cloudinary from 'cloudinary';
+
+cloudinary.config({
+  cloud_name: 'hascensnx',
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
 
 const router = express.Router();
 
-const s3 = new aws.S3();
-
-const storage = multerS3({
-  s3,
-  bucket: 'alexander-photos-images',
-  acl: 'public-read',
-  contentType: multerS3.AUTO_CONTENT_TYPE,
-  metadata: function (_req, file, cb) {
-    cb(null, { fieldName: file.fieldname });
-  },
-  key: function (_req, file, cb) {
+const storage = multer.diskStorage({
+  filename: function (_req, file, cb) {
     cb(null, file.originalname);
   },
 });
@@ -47,6 +43,7 @@ router.post('/', upload.array('photos'), async (req, res) => {
 
   const exifDatas = typeof req.body.exifDatas === 'string' ? [req.body.exifDatas] : req.body.exifDatas;
   const photos = req.files.map((file, idx) => {
+    cloudinary.v2.uploader.upload(file.path, { use_filename: true, unique_filename: false });
     const exifData = JSON.parse(exifDatas[idx]);
     const photo = { filePath: file.originalname, ...exifData };
     promiseFuncs.push({ func: insertQuery, arg: photo });

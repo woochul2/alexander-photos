@@ -1,9 +1,8 @@
-import dotenv from 'dotenv';
+import 'dotenv/config';
 import express from 'express';
 import morgan from 'morgan';
 import imagesRoutes from './api/routes/images.js';
 import Database from './Database.js';
-dotenv.config();
 
 Database.connect();
 

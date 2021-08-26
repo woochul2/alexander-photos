@@ -1,6 +1,6 @@
 // const API_ENDPOINT = 'http://127.0.0.1:3000';
 const API_ENDPOINT = 'https://alexander-photos-server.herokuapp.com';
-export const IMG_PATH_PREFIX = 'https://alexander-photos-images.s3.ap-northeast-2.amazonaws.com';
+export const IMG_PATH_PREFIX = 'https://res.cloudinary.com/hascensnx/image/upload/v1629971654';
 
 export async function getImages() {
   try {
