@@ -1,8 +1,8 @@
-import 'dotenv/config';
-import express from 'express';
-import morgan from 'morgan';
-import imagesRoutes from './api/routes/images.js';
-import Database from './Database.js';
+const express = require('express');
+const morgan = require('morgan');
+const imagesRoutes = require('./api/routes/images');
+const Database = require('./Database');
+require('dotenv').config();
 
 Database.connect();
 
@@ -33,4 +33,4 @@ app.use((error, _req, res, _next) => {
   });
 });
 
-export default app;
+module.exports = app;

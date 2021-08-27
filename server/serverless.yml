@@ -1,0 +1,16 @@
+service: alexander-photos-server
+
+provider:
+  name: aws
+  runtime: nodejs12.x
+  region: ap-northeast-2
+
+functions:
+  app:
+    handler: src/serverless.handler
+    events:
+      - http: ANY /
+      - http: 'ANY {proxy+}'
+
+plugins:
+  - serverless-dotenv-plugin

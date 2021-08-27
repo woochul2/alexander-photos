@@ -1,6 +1,6 @@
-import { MongoClient } from 'mongodb';
+const { MongoClient } = require('mongodb');
 
-export default (function () {
+module.exports = (function () {
   class Database {
     constructor() {
       if (Database.instance) return Database.instance;

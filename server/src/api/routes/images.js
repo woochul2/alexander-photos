@@ -1,7 +1,7 @@
-import express from 'express';
-import multer from 'multer';
-import Database from '../../Database.js';
-import cloudinary from 'cloudinary';
+const express = require('express');
+const multer = require('multer');
+const Database = require('../../Database');
+const cloudinary = require('cloudinary');
 
 cloudinary.config({
   cloud_name: 'hascensnx',
@@ -66,4 +66,4 @@ router.post('/', upload.array('photos'), async (req, res) => {
   }
 });
 
-export default router;
+module.exports = router;
