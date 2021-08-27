@@ -11,6 +11,7 @@ export default class PhotoModals {
   init($app) {
     this.$target.className = 'photo-modals';
     $app.appendChild(this.$target);
+
     this.$target.addEventListener('click', (event) => {
       const $photoModal = event.target.closest('.photo-modal');
       if (!$photoModal) return;

@@ -11,29 +11,21 @@ export default class Header {
 
   init($app) {
     this.$target.className = 'header';
-    this.$target.innerHTML = `
-      <h1 class="header__title">알렉산더 포토</h1>
-      <div class="header__right">
-        <a class="github-icon" href="https://github.com/woochul2/alexander-photos" aria-label="깃허브" target="_blank">
-          <i class="fab fa-github"></i>
-        </a>
-        <input class="upload-button-input" type="file" aria-label="이미지 올리기" multiple hidden>
-        <button class="upload-button hidden" aria-label="이미지 올리기">
-          <img class="upload-button-icon" src="./src/icons/upload.svg" alt="업로드 아이콘"/>
-          업로드
-        </button>
-      </div>
-    `;
     $app.appendChild(this.$target);
+    this.render();
 
-    const $uploadButton = document.querySelector('.upload-button');
-    const $uploadButtonInput = document.querySelector('.upload-button-input');
+    const uploadButtonClickEvent = (event) => {
+      const $uploadButton = event.target.closest('.upload-btn');
+      if (!$uploadButton) return;
 
-    $uploadButton.addEventListener('click', () => {
+      const $uploadButtonInput = document.querySelector('.upload-btn-input');
       $uploadButtonInput.click();
-    });
+    };
 
-    $uploadButtonInput.addEventListener('change', async (event) => {
+    const uploadButtonInputChangeEvent = async (event) => {
+      const $uploadButtonInput = event.target.closest('.upload-btn-input');
+      if (!$uploadButtonInput) return;
+
       const { files } = event.target;
       const formData = new FormData();
 
@@ -49,7 +41,10 @@ export default class Header {
         }, [])
       );
       await postImages(formData);
-    });
+    };
+
+    this.$target.addEventListener('click', uploadButtonClickEvent);
+    this.$target.addEventListener('change', uploadButtonInputChangeEvent);
   }
 
   setState(nextState) {
@@ -58,8 +53,22 @@ export default class Header {
   }
 
   render() {
-    const $uploadButton = document.querySelector('.upload-button');
-    if (this.state.isLoading) $uploadButton.classList.add('hidden');
-    else $uploadButton.classList.remove('hidden');
+    const uploadButton = `
+      <button class="upload-btn" aria-label="이미지 올리기">
+        <img src="./src/icons/upload.svg" class="upload-btn-icon" alt="업로드 아이콘"/>
+        업로드
+      </button>
+    `;
+
+    this.$target.innerHTML = `
+      <h1 class="header__title">알렉산더 포토</h1>
+      <div class="header__right">
+        <a href="https://github.com/woochul2/alexander-photos" class="github-icon" aria-label="깃허브" target="_blank">
+          <i class="fab fa-github"></i>
+        </a>
+        <input type="file" class="upload-btn-input" aria-label="이미지 올리기" multiple hidden>
+        ${this.state.isLoading ? '' : uploadButton}
+      </div>
+    `;
   }
 }

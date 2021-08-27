@@ -47,7 +47,7 @@ body {
   color: inherit;
 }
 
-.upload-button {
+.upload-btn {
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -58,12 +58,8 @@ body {
   border-radius: 0.25rem;
 }
 
-.upload-button:hover {
+.upload-btn:hover {
   background-color: hsl(0, 0%, 95%);
-}
-
-.upload-button.hidden {
-  display: none;
 }
 
 .loading {
