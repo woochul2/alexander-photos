@@ -13,11 +13,16 @@ export default class Header {
     this.$target.className = 'header';
     this.$target.innerHTML = `
       <h1 class="header__title">알렉산더 포토</h1>
-      <input class="upload-button-input" type="file" aria-label="이미지 올리기" multiple hidden>
-      <button class="upload-button hidden" aria-label="이미지 올리기">
-        <img class="upload-button-icon" src="./src/icons/upload.svg" />
-        업로드
-      </button>
+      <div class="header__right">
+        <a class="github-icon" href="https://github.com/woochul2/alexander-photos" aria-label="깃허브" target="_blank">
+          <i class="fab fa-github"></i>
+        </a>
+        <input class="upload-button-input" type="file" aria-label="이미지 올리기" multiple hidden>
+        <button class="upload-button hidden" aria-label="이미지 올리기">
+          <img class="upload-button-icon" src="./src/icons/upload.svg" alt="업로드 아이콘"/>
+          업로드
+        </button>
+      </div>
     `;
     $app.appendChild(this.$target);
 
