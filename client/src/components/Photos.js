@@ -1,4 +1,4 @@
-import { IMG_PATH_PREFIX } from '../api.js';
+import { API_ENDPOINT } from '../api.js';
 
 export default class Photos {
   constructor({ $app, initialState, onClick }) {
@@ -28,7 +28,7 @@ export default class Photos {
 
   render() {
     this.$target.innerHTML = this.state.photos
-      .map((photo) => `<img src=${`${IMG_PATH_PREFIX}/${photo.filePath}`} class="photo" data-id="${photo._id}">`)
+      .map((photo) => `<img src=${`${API_ENDPOINT}/image/${photo.filePath}`} class="photo" data-id="${photo._id}">`)
       .join('');
   }
 }

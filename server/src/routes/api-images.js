@@ -1,18 +1,16 @@
+const aws = require('aws-sdk');
 const express = require('express');
 const multer = require('multer');
-const Database = require('../../Database');
-const cloudinary = require('cloudinary');
-
-cloudinary.config({
-  cloud_name: 'hascensnx',
-  api_key: process.env.CLOUDINARY_API_KEY,
-  api_secret: process.env.CLOUDINARY_API_SECRET,
-});
+const multerS3 = require('multer-s3');
+const Database = require('../Database');
 
 const router = express.Router();
 
-const storage = multer.diskStorage({
-  filename: function (_req, file, cb) {
+const storage = multerS3({
+  s3: new aws.S3(),
+  bucket: 'alexander-photos-images',
+  contentType: multerS3.AUTO_CONTENT_TYPE,
+  key: function (_req, file, cb) {
     cb(null, file.originalname);
   },
 });
@@ -42,7 +40,6 @@ router.post('/', upload.array('photos'), async (req, res) => {
 
   const exifDatas = typeof req.body.exifDatas === 'string' ? [req.body.exifDatas] : req.body.exifDatas;
   const photos = req.files.map((file, idx) => {
-    cloudinary.v2.uploader.upload(file.path, { use_filename: true, unique_filename: false });
     const exifData = JSON.parse(exifDatas[idx]);
     const photo = { filePath: file.originalname, ...exifData };
     return photo;

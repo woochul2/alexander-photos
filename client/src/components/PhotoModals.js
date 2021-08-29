@@ -1,4 +1,4 @@
-import { IMG_PATH_PREFIX } from '../api.js';
+import { API_ENDPOINT } from '../api.js';
 
 export default class PhotoModals {
   constructor({ $app, initialState }) {
@@ -40,7 +40,7 @@ export default class PhotoModals {
       .map((photo) => {
         return `
           <div class="photo-modal hidden" data-id="${photo._id}">
-            <img src="${`${IMG_PATH_PREFIX}/${photo.filePath}`}" class="photo-modal__img">
+            <img src="${`${API_ENDPOINT}/image/${photo.filePath}`}" class="photo-modal__img">
           </div>
         `;
       })
