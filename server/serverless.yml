@@ -9,8 +9,12 @@ functions:
   app:
     handler: src/serverless.handler
     events:
-      - http: ANY /
-      - http: 'ANY {proxy+}'
+      - http:
+          path: /
+          method: ANY
+      - http:
+          path: /{proxy+}
+          method: ANY
 
 plugins:
   - serverless-dotenv-plugin
