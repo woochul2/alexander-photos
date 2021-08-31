@@ -14,9 +14,9 @@ router.get('/:imageName', async (req, res) => {
       })
       .promise();
 
-    const { width } = await sharp(s3Object.Body).metadata();
-    const newWidth = req.query.w ? Math.min(parseInt(req.query.w), width) : Math.min(width, 500);
-    const resizedImg = await sharp(s3Object.Body).resize(newWidth).toBuffer();
+    const { height } = await sharp(s3Object.Body).metadata();
+    const newHeight = req.query.h ? Math.min(parseInt(req.query.h), height) : Math.min(height, 250);
+    const resizedImg = await sharp(s3Object.Body).rotate().resize({ height: newHeight }).toBuffer();
     res.contentType(s3Object.ContentType);
     res.send(resizedImg);
   } catch (err) {

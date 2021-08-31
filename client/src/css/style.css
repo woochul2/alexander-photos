@@ -88,8 +88,7 @@ body {
 .photo {
   cursor: pointer;
   width: auto;
-  /* FIXME: 임시로 300px로 설정했는데, 수정해야 함 */
-  height: 300px;
+  max-height: 15.625rem;
   margin: 0.125rem;
 }
 
