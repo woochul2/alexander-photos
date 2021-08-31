@@ -32,7 +32,9 @@ export default class Header {
         const file = files[key];
         formData.append('photo', file);
         const exifData = await getExifData(file);
-        formData.append('exifData', JSON.stringify(exifData));
+        if (Object.keys(exifData).filter((key) => exifData[key]).length) {
+          formData.append('exifData', JSON.stringify(exifData));
+        }
         await postImage(formData);
       });
     };

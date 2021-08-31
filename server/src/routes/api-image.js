@@ -1,16 +1,15 @@
 const aws = require('aws-sdk');
 const express = require('express');
+const fs = require('fs/promises');
 const multer = require('multer');
-const multerS3 = require('multer-s3');
+const sharp = require('sharp');
+const { IMG_BUCKET } = require('../constants');
 const Database = require('../Database');
 
 const router = express.Router();
 
-const storage = multerS3({
-  s3: new aws.S3(),
-  bucket: 'alexander-photos-images',
-  contentType: multerS3.AUTO_CONTENT_TYPE,
-  key: function (_req, file, cb) {
+const storage = multer.diskStorage({
+  filename: function (_req, file, cb) {
     cb(null, file.originalname);
   },
 });
@@ -23,10 +22,31 @@ const fileFilter = (_req, file, cb) => {
   }
 };
 
+const s3 = new aws.S3();
 const upload = multer({ storage, fileFilter });
 
 router.post('/', upload.single('photo'), async (req, res) => {
-  const exifData = JSON.parse(req.body.exifData || null);
+  const uploadToS3 = async () => {
+    const file = await fs.readFile(req.file.path);
+    await s3
+      .upload({
+        Bucket: IMG_BUCKET,
+        Key: req.file.originalname,
+        Body: file,
+        ContentType: req.file.mimetype,
+      })
+      .promise();
+  };
+
+  uploadToS3();
+
+  const getExifData = async () => {
+    if (req.body.exifData) return JSON.parse(req.body.exifData);
+    const { width, height } = await sharp(req.file.path).metadata();
+    return { PixelXDimension: width, PixelYDimension: height };
+  };
+  const exifData = await getExifData();
+
   const photo = { filePath: req.file.originalname, ...exifData };
 
   try {

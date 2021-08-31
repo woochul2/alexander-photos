@@ -18,16 +18,19 @@ export default class App {
         document.body.style.overflow = 'hidden';
         $photoModal.classList.remove('hidden');
         $photoModal.classList.add('visible');
+        $photoModal.style = '';
         $photoModal.style.top = `${window.scrollY}px`;
         $photoModal.style.zIndex = 100;
 
         const $photo = document.querySelector(`.photo[data-id="${id}"]`);
-        const { offsetTop, offsetLeft, clientWidth, clientHeight } = $photo;
+        const { offsetTop, offsetLeft, clientWidth, clientHeight, src } = $photo;
         const $photoModalImg = $photoModal.querySelector('.photo-modal__img');
+        $photoModalImg.style = '';
         $photoModalImg.style.top = `${offsetTop - window.scrollY}px`;
         $photoModalImg.style.left = `${offsetLeft}px`;
         $photoModalImg.style.height = `${clientHeight}px`;
         $photoModalImg.style.width = `auto`;
+        $photoModalImg.src = `${src}?h=${window.innerHeight}`;
 
         setTimeout(() => {
           const scaleRatio = window.innerHeight / clientHeight;

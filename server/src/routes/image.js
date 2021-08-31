@@ -1,6 +1,7 @@
 const aws = require('aws-sdk');
 const express = require('express');
 const sharp = require('sharp');
+const { IMG_BUCKET } = require('../constants');
 
 const router = express.Router();
 const s3 = new aws.S3();
@@ -9,7 +10,7 @@ router.get('/:imageName', async (req, res) => {
   try {
     const s3Object = await s3
       .getObject({
-        Bucket: 'alexander-photos-images',
+        Bucket: IMG_BUCKET,
         Key: req.params.imageName,
       })
       .promise();
