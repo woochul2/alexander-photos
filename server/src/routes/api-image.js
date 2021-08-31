@@ -1,6 +1,6 @@
 const aws = require('aws-sdk');
 const express = require('express');
-const fs = require('fs/promises');
+const fs = require('fs').promises;
 const multer = require('multer');
 const sharp = require('sharp');
 const { IMG_BUCKET } = require('../constants');
