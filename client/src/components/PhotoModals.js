@@ -27,6 +27,7 @@ export default class PhotoModals {
       $photoModalImg.style.top = `${offsetTop - window.scrollY}px`;
       $photoModalImg.style.left = `${offsetLeft}px`;
       $photoModalImg.style.height = `${clientHeight}px`;
+      $photoModalImg.style.width = 'auto';
     });
   }
 

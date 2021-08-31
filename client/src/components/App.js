@@ -29,15 +29,25 @@ export default class App {
         $photoModalImg.style.top = `${offsetTop - window.scrollY}px`;
         $photoModalImg.style.left = `${offsetLeft}px`;
         $photoModalImg.style.height = `${clientHeight}px`;
-        $photoModalImg.style.width = `auto`;
+        $photoModalImg.style.width = `${clientWidth}px`;
         $photoModalImg.src = `${src}?h=${window.innerHeight}`;
 
         setTimeout(() => {
-          const scaleRatio = window.innerHeight / clientHeight;
-          const width = clientWidth * scaleRatio;
-          $photoModalImg.style.top = '0';
+          const photo = this.state.photos.find((photo) => photo._id === id);
+          let height = Math.min(window.innerHeight, photo.pixelYDimension);
+          let scaleRatio = height / clientHeight;
+          let width = clientWidth * scaleRatio;
+
+          if (width > window.innerWidth) {
+            width = window.innerWidth;
+            scaleRatio = width / clientWidth;
+            height = clientHeight * scaleRatio;
+          }
+
+          $photoModalImg.style.top = `${(window.innerHeight - height) / 2}px`;
           $photoModalImg.style.left = `${(window.innerWidth - width) / 2}px`;
-          $photoModalImg.style.height = `${window.innerHeight}px`;
+          $photoModalImg.style.height = `${height}px`;
+          $photoModalImg.style.width = `${width}px`;
         }, 0);
       },
     });

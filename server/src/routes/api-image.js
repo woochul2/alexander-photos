@@ -43,7 +43,7 @@ router.post('/', upload.single('photo'), async (req, res) => {
   const getExifData = async () => {
     if (req.body.exifData) return JSON.parse(req.body.exifData);
     const { width, height } = await sharp(req.file.path).metadata();
-    return { PixelXDimension: width, PixelYDimension: height };
+    return { pixelXDimension: width, pixelYDimension: height };
   };
   const exifData = await getExifData();
 
