@@ -1,4 +1,4 @@
-import { postImages } from '../api.js';
+import { postImage } from '../api.js';
 import { getExifData } from '../utils.js';
 
 export default class Header {
@@ -27,20 +27,14 @@ export default class Header {
       if (!$uploadButtonInput) return;
 
       const { files } = event.target;
-      const formData = new FormData();
-
-      const appendFormData = async (file) => {
+      Object.keys(files).forEach(async (key) => {
+        const formData = new FormData();
+        const file = files[key];
+        formData.append('photo', file);
         const exifData = await getExifData(file);
-        formData.append('photos', file);
-        formData.append('exifDatas', JSON.stringify(exifData));
-      };
-
-      await Promise.all(
-        Object.keys(files).reduce((prevList, key) => {
-          return [...prevList, appendFormData(files[key])];
-        }, [])
-      );
-      await postImages(formData);
+        formData.append('exifData', JSON.stringify(exifData));
+        await postImage(formData);
+      });
     };
 
     this.$target.addEventListener('click', uploadButtonClickEvent);

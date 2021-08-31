@@ -11,9 +11,9 @@ export async function getImages() {
   }
 }
 
-export async function postImages(formData) {
+export async function postImage(formData) {
   try {
-    const response = await fetch(`${API_ENDPOINT}/api/images`, {
+    const response = await fetch(`${API_ENDPOINT}/api/image`, {
       method: 'POST',
       body: formData,
     });

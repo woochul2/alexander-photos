@@ -2,6 +2,7 @@ require('dotenv').config();
 const express = require('express');
 const morgan = require('morgan');
 const imageRoutes = require('./routes/image');
+const apiImageRoutes = require('./routes/api-image');
 const apiImagesRoutes = require('./routes/api-images');
 
 const app = express();
@@ -15,6 +16,7 @@ app.use((_req, res, next) => {
 });
 
 app.use('/image', imageRoutes);
+app.use('/api/image', apiImageRoutes);
 app.use('/api/images', apiImagesRoutes);
 
 app.use((_req, _res, next) => {
