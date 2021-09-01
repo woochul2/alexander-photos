@@ -8,6 +8,28 @@ export default class PhotoModals {
     this.init($app);
   }
 
+  get maxSize() {
+    const { currentId } = this.state;
+    const $photo = document.querySelector(`.photo[data-id="${currentId}"]`);
+    const { clientWidth, clientHeight } = $photo;
+    const { pixelYDimension } = this.state.photos.find((photo) => photo._id === currentId);
+
+    let height = Math.min(window.innerHeight, pixelYDimension);
+    let scaleRatio = height / clientHeight;
+    let width = clientWidth * scaleRatio;
+
+    if (width > window.innerWidth) {
+      width = window.innerWidth;
+      scaleRatio = width / clientWidth;
+      height = clientHeight * scaleRatio;
+    }
+
+    return {
+      width,
+      height,
+    };
+  }
+
   init($app) {
     this.$target.className = 'photo-modals';
     $app.appendChild(this.$target);
@@ -71,24 +93,13 @@ export default class PhotoModals {
     $photoModalImg.style.left = `${offsetLeft}px`;
     $photoModalImg.style.height = `${clientHeight}px`;
     $photoModalImg.style.width = `${clientWidth}px`;
-    $photoModalImg.src = `${src}?h=${window.innerHeight}`;
+    $photoModalImg.src = `${src}?h=${this.maxSize.height}`;
 
     setTimeout(() => {
-      const photo = this.state.photos.find((photo) => photo._id === currentId);
-      let height = Math.min(window.innerHeight, photo.pixelYDimension);
-      let scaleRatio = height / clientHeight;
-      let width = clientWidth * scaleRatio;
-
-      if (width > window.innerWidth) {
-        width = window.innerWidth;
-        scaleRatio = width / clientWidth;
-        height = clientHeight * scaleRatio;
-      }
-
-      $photoModalImg.style.top = `${(window.innerHeight - height) / 2}px`;
-      $photoModalImg.style.left = `${(window.innerWidth - width) / 2}px`;
-      $photoModalImg.style.height = `${height}px`;
-      $photoModalImg.style.width = `${width}px`;
+      $photoModalImg.style.top = `${(window.innerHeight - this.maxSize.height) / 2}px`;
+      $photoModalImg.style.left = `${(window.innerWidth - this.maxSize.width) / 2}px`;
+      $photoModalImg.style.height = `${this.maxSize.height}px`;
+      $photoModalImg.style.width = `${this.maxSize.width}px`;
     }, 0);
   }
 }
