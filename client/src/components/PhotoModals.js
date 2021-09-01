@@ -68,7 +68,7 @@ export default class PhotoModals {
       .map((photo) => {
         return `
           <div class="photo-modal hidden" data-id="${photo._id}">
-            <img src="${`${API_ENDPOINT}/image/${photo.filePath}`}" class="photo-modal__img">
+            <img src="${encodeURI(`${API_ENDPOINT}/image/${photo.filePath}`)}" class="photo-modal__img">
           </div>
         `;
       })

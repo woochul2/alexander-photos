@@ -28,7 +28,10 @@ export default class Photos {
 
   render() {
     this.$target.innerHTML = this.state.photos
-      .map((photo) => `<img src=${`${API_ENDPOINT}/image/${photo.filePath}`} class="photo" data-id="${photo._id}">`)
+      .map((photo) => {
+        const imagePath = encodeURI(`${API_ENDPOINT}/image/${photo.filePath}`);
+        return `<img src=${imagePath} class="photo" data-id="${photo._id}">`;
+      })
       .join('');
   }
 }
