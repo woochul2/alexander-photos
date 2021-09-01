@@ -13,6 +13,10 @@ body {
   color: hsl(0, 0%, 15%);
 }
 
+img {
+  display: block;
+}
+
 .header {
   position: sticky;
   top: 0;
@@ -90,6 +94,13 @@ body {
   width: auto;
   max-height: 15.625rem;
   margin: 0.125rem;
+  padding: 0;
+  background: 0;
+  border: 0;
+}
+
+.photo:focus-visible {
+  outline: 0.25rem solid hsl(330, 100%, 71%);
 }
 
 .photo-modal {
@@ -111,6 +122,31 @@ body {
   background-color: hsla(0, 0%, 0%, 0);
   transition: visibility 0s var(--transition-duration),
     background-color var(--transition-duration) var(--transition-timing-function);
+}
+
+.photo-modal__top {
+  margin: 1rem;
+}
+
+.photo-modal button {
+  cursor: pointer;
+  background: 0;
+  border: 0;
+  transition: all var(--transition-duration) var(--transition-timing-function);
+}
+
+.photo-modal.visible button {
+  visibility: visible;
+  opacity: 1;
+}
+
+.photo-modal.hidden button {
+  visibility: hidden;
+  opacity: 0;
+}
+
+.photo-modal.hidden .photo-modal__close {
+  transform: rotate(90deg);
 }
 
 .photo-modal__img {

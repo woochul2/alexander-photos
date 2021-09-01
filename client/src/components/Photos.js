@@ -30,7 +30,11 @@ export default class Photos {
     this.$target.innerHTML = this.state.photos
       .map((photo) => {
         const imagePath = encodeURI(`${API_ENDPOINT}/image/${photo.filePath}`);
-        return `<img src=${imagePath} class="photo" data-id="${photo._id}">`;
+        return `
+          <button class="photo" data-id="${photo._id}" aria-label="사진 열기" onclick="this.blur();">
+            <img src=${imagePath} class="photo__img">
+          </button>
+        `;
       })
       .join('');
   }

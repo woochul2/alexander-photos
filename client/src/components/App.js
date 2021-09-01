@@ -1,4 +1,5 @@
 import { getImages } from '../api.js';
+import { toggleTabIndex } from '../utils/toggleTabIndex.js';
 import Header from './Header.js';
 import Loading from './Loading.js';
 import PhotoModals from './PhotoModals.js';
@@ -15,11 +16,15 @@ export default class App {
       initialState: { photos: this.state.photos },
       onClick: (id) => {
         this.setState({ currentId: id });
+        toggleTabIndex();
       },
     });
     this.photoModals = new PhotoModals({
       $app,
       initialState: { photos: this.state.photos, currentId: this.state.currentId },
+      onClose: () => {
+        this.setState({ currentId: null });
+      },
     });
 
     this.init();
@@ -50,5 +55,13 @@ export default class App {
     } catch (err) {
       console.error(err);
     }
+
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape' && this.state.currentId !== null) {
+        const $photo = document.querySelector(`.photo[data-id="${this.state.currentId}"]`);
+        $photo.focus();
+        this.setState({ currentId: null });
+      }
+    });
   }
 }
