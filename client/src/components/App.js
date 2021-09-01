@@ -6,7 +6,7 @@ import Photos from './Photos.js';
 
 export default class App {
   constructor($app) {
-    this.state = { photos: [], isLoading: true };
+    this.state = { photos: [], isLoading: true, currentId: null };
 
     this.header = new Header({ $app, initialState: { isLoading: this.state.isLoading } });
     this.loading = new Loading({ $app, initialState: { isLoading: this.state.isLoading } });
@@ -14,44 +14,13 @@ export default class App {
       $app,
       initialState: { photos: this.state.photos },
       onClick: (id) => {
-        const $photoModal = document.querySelector(`.photo-modal[data-id="${id}"]`);
-        document.body.style.overflow = 'hidden';
-        $photoModal.classList.remove('hidden');
-        $photoModal.classList.add('visible');
-        $photoModal.style = '';
-        $photoModal.style.top = `${window.scrollY}px`;
-        $photoModal.style.zIndex = 100;
-
-        const $photo = document.querySelector(`.photo[data-id="${id}"]`);
-        const { offsetTop, offsetLeft, clientWidth, clientHeight, src } = $photo;
-        const $photoModalImg = $photoModal.querySelector('.photo-modal__img');
-        $photoModalImg.style = '';
-        $photoModalImg.style.top = `${offsetTop - window.scrollY}px`;
-        $photoModalImg.style.left = `${offsetLeft}px`;
-        $photoModalImg.style.height = `${clientHeight}px`;
-        $photoModalImg.style.width = `${clientWidth}px`;
-        $photoModalImg.src = `${src}?h=${window.innerHeight}`;
-
-        setTimeout(() => {
-          const photo = this.state.photos.find((photo) => photo._id === id);
-          let height = Math.min(window.innerHeight, photo.pixelYDimension);
-          let scaleRatio = height / clientHeight;
-          let width = clientWidth * scaleRatio;
-
-          if (width > window.innerWidth) {
-            width = window.innerWidth;
-            scaleRatio = width / clientWidth;
-            height = clientHeight * scaleRatio;
-          }
-
-          $photoModalImg.style.top = `${(window.innerHeight - height) / 2}px`;
-          $photoModalImg.style.left = `${(window.innerWidth - width) / 2}px`;
-          $photoModalImg.style.height = `${height}px`;
-          $photoModalImg.style.width = `${width}px`;
-        }, 0);
+        this.setState({ currentId: id });
       },
     });
-    this.photoModals = new PhotoModals({ $app, initialState: { photos: this.state.photos } });
+    this.photoModals = new PhotoModals({
+      $app,
+      initialState: { photos: this.state.photos, currentId: this.state.currentId },
+    });
 
     this.init();
   }
@@ -59,10 +28,15 @@ export default class App {
   setState(nextState) {
     this.state = { ...this.state, ...nextState };
     const has = (property) => nextState.hasOwnProperty(property);
-    if (has('isLoading')) this.header.setState({ isLoading: this.state.isLoading });
-    if (has('isLoading')) this.loading.setState({ isLoading: this.state.isLoading });
-    if (has('photos')) this.photos.setState({ photos: this.state.photos });
-    if (has('photos')) this.photoModals.setState({ photos: this.state.photos });
+    if (has('isLoading')) {
+      this.header.setState({ isLoading: this.state.isLoading });
+      this.loading.setState({ isLoading: this.state.isLoading });
+    }
+    if (has('photos')) {
+      this.photos.setState({ photos: this.state.photos });
+      this.photoModals.setState({ photos: this.state.photos });
+    }
+    if (has('currentId')) this.photoModals.setState({ currentId: this.state.currentId });
   }
 
   async init() {

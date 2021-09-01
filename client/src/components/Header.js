@@ -1,5 +1,5 @@
 import { postImage } from '../api.js';
-import { getExifData } from '../utils.js';
+import { getExifData } from '../utils/getExifData.js';
 
 export default class Header {
   constructor({ $app, initialState }) {

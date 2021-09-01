@@ -32,8 +32,13 @@ export default class PhotoModals {
   }
 
   setState(nextState) {
-    this.state = nextState;
-    this.render();
+    this.state = { ...this.state, ...nextState };
+    const has = (property) => nextState.hasOwnProperty(property);
+    if (has('photos')) {
+      this.render();
+    } else if (has('currentId')) {
+      this.animation();
+    }
   }
 
   render() {
@@ -46,5 +51,44 @@ export default class PhotoModals {
         `;
       })
       .join('');
+  }
+
+  animation() {
+    const { currentId } = this.state;
+    const $photoModal = document.querySelector(`.photo-modal[data-id="${currentId}"]`);
+    document.body.style.overflow = 'hidden';
+    $photoModal.classList.remove('hidden');
+    $photoModal.classList.add('visible');
+    $photoModal.style = '';
+    $photoModal.style.top = `${window.scrollY}px`;
+    $photoModal.style.zIndex = 100;
+
+    const $photo = document.querySelector(`.photo[data-id="${currentId}"]`);
+    const { offsetTop, offsetLeft, clientWidth, clientHeight, src } = $photo;
+    const $photoModalImg = $photoModal.querySelector('.photo-modal__img');
+    $photoModalImg.style = '';
+    $photoModalImg.style.top = `${offsetTop - window.scrollY}px`;
+    $photoModalImg.style.left = `${offsetLeft}px`;
+    $photoModalImg.style.height = `${clientHeight}px`;
+    $photoModalImg.style.width = `${clientWidth}px`;
+    $photoModalImg.src = `${src}?h=${window.innerHeight}`;
+
+    setTimeout(() => {
+      const photo = this.state.photos.find((photo) => photo._id === currentId);
+      let height = Math.min(window.innerHeight, photo.pixelYDimension);
+      let scaleRatio = height / clientHeight;
+      let width = clientWidth * scaleRatio;
+
+      if (width > window.innerWidth) {
+        width = window.innerWidth;
+        scaleRatio = width / clientWidth;
+        height = clientHeight * scaleRatio;
+      }
+
+      $photoModalImg.style.top = `${(window.innerHeight - height) / 2}px`;
+      $photoModalImg.style.left = `${(window.innerWidth - width) / 2}px`;
+      $photoModalImg.style.height = `${height}px`;
+      $photoModalImg.style.width = `${width}px`;
+    }, 0);
   }
 }
