@@ -17,7 +17,8 @@ export default class Photos {
     this.$target.addEventListener('click', (event) => {
       const $photo = event.target.closest('.photo');
       if (!$photo) return;
-      this.onClick($photo.dataset.id);
+      const photo = this.state.photos.find((photo) => photo._id === $photo.dataset.id);
+      this.onClick(photo);
     });
   }
 

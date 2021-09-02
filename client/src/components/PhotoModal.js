@@ -1,7 +1,7 @@
 import { API_ENDPOINT } from '../api.js';
 import { toggleTabIndex } from '../utils/toggleTabIndex.js';
 
-export default class PhotoModals {
+export default class PhotoModal {
   constructor({ $app, initialState, onClose }) {
     this.state = initialState;
     this.$target = document.createElement('div');
@@ -12,10 +12,10 @@ export default class PhotoModals {
   }
 
   get maxSize() {
-    const { currentId } = this.state;
-    const $photo = document.querySelector(`.photo[data-id="${currentId}"]`);
+    const { currentPhoto } = this.state;
+    const $photo = document.querySelector(`.photo[data-id="${currentPhoto._id}"]`);
     const { clientWidth, clientHeight } = $photo;
-    const { pixelYDimension } = this.state.photos.find((photo) => photo._id === currentId);
+    const { pixelYDimension } = currentPhoto;
 
     let height = Math.min(window.innerHeight, pixelYDimension);
     let scaleRatio = height / clientHeight;
@@ -34,8 +34,10 @@ export default class PhotoModals {
   }
 
   init($app) {
-    this.$target.className = 'photo-modals';
+    this.$target.className = 'photo-modal';
+    this.$target.classList.add('hidden');
     $app.appendChild(this.$target);
+    this.render();
 
     this.$target.addEventListener('click', (event) => {
       if (event.target.closest('.photo-modal__close')) {
@@ -45,70 +47,59 @@ export default class PhotoModals {
   }
 
   setState(nextState) {
-    this.state = { ...this.state, ...nextState };
-    const has = (property) => nextState.hasOwnProperty(property);
-    if (has('photos')) {
-      this.render();
-    } else if (has('currentId')) {
-      this.animation();
-    }
+    this.state = nextState;
+    this.animation();
   }
 
   render() {
-    this.$target.innerHTML = this.state.photos
-      .map((photo) => {
-        return `
-          <div class="photo-modal hidden" data-id="${photo._id}">
-            <img src="${encodeURI(`${API_ENDPOINT}/image/${photo.filePath}`)}" class="photo-modal__img">
-            <div class="photo-modal__top">
-              <button class="photo-modal__close" aria-label="사진 목록으로 돌아가기">
-                <img src="./src/icons/arrow-left.svg" alt="닫기 아이콘">
-              </button>
-            </div>
-          </div>
-        `;
-      })
-      .join('');
+    this.$target.innerHTML = `
+      <img class="photo-modal__img">
+      <div class="photo-modal__top">
+        <button class="photo-modal__close" aria-label="사진 목록으로 돌아가기">
+          <img src="./src/icons/arrow-left.svg" alt="닫기 아이콘">
+        </button>
+      </div>
+    `;
   }
 
   animation() {
-    const { currentId } = this.state;
-    if (currentId === null) {
-      const $photoModal = document.querySelector(`.photo-modal[data-id="${this.prevId}"]`);
+    const { currentPhoto } = this.state;
+    if (!currentPhoto) {
+      if (!this.prevId) return;
       const $photo = document.querySelector(`.photo[data-id="${this.prevId}"]`);
       const { offsetTop, offsetLeft, clientHeight } = $photo;
-      const $photoModalImg = $photoModal.querySelector('.photo-modal__img');
+      const $photoModalImg = this.$target.querySelector('.photo-modal__img');
       document.body.style = '';
-      $photoModal.classList.remove('visible');
-      $photoModal.classList.add('hidden');
-      $photoModal.style.zIndex = '';
+      this.$target.classList.remove('visible');
+      this.$target.classList.add('hidden');
+      this.$target.style.zIndex = '';
       $photoModalImg.style.top = `${offsetTop - window.scrollY}px`;
       $photoModalImg.style.left = `${offsetLeft}px`;
       $photoModalImg.style.height = `${clientHeight}px`;
       $photoModalImg.style.width = 'auto';
       toggleTabIndex();
     } else {
-      this.prevId = currentId;
-      const $photoModal = document.querySelector(`.photo-modal[data-id="${currentId}"]`);
+      this.prevId = currentPhoto._id;
       document.body.style.overflow = 'hidden';
-      $photoModal.classList.remove('hidden');
-      $photoModal.classList.add('visible');
-      $photoModal.style = '';
-      $photoModal.style.top = `${window.scrollY}px`;
-      $photoModal.style.zIndex = 100;
+      this.$target.classList.remove('hidden');
+      this.$target.classList.add('visible');
+      this.$target.style = '';
+      this.$target.style.top = `${window.scrollY}px`;
+      this.$target.style.zIndex = 100;
 
-      const $photo = document.querySelector(`.photo[data-id="${currentId}"]`);
+      const $photo = document.querySelector(`.photo[data-id="${currentPhoto._id}"]`);
       const { offsetTop, offsetLeft, clientWidth, clientHeight } = $photo;
       const { src } = $photo.querySelector('.photo__img');
-      const $photoModalImg = $photoModal.querySelector('.photo-modal__img');
+      const $photoModalImg = this.$target.querySelector('.photo-modal__img');
+      $photoModalImg.src = src;
       $photoModalImg.style = '';
       $photoModalImg.style.top = `${offsetTop - window.scrollY}px`;
       $photoModalImg.style.left = `${offsetLeft}px`;
       $photoModalImg.style.height = `${clientHeight}px`;
       $photoModalImg.style.width = `${clientWidth}px`;
-      $photoModalImg.src = `${src}?h=${this.maxSize.height}`;
 
       setTimeout(() => {
+        $photoModalImg.src = `${src}?h=${this.maxSize.height}`;
         $photoModalImg.style.top = `${(window.innerHeight - this.maxSize.height) / 2}px`;
         $photoModalImg.style.left = `${(window.innerWidth - this.maxSize.width) / 2}px`;
         $photoModalImg.style.height = `${this.maxSize.height}px`;

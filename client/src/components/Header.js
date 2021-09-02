@@ -19,7 +19,7 @@ export default class Header {
       const $uploadButton = event.target.closest('.upload-btn');
       if (!$uploadButton) return;
 
-      const $uploadButtonInput = document.querySelector('.upload-btn-input');
+      const $uploadButtonInput = this.$target.querySelector('.upload-btn-input');
       $uploadButtonInput.click();
     };
 
