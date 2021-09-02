@@ -1,12 +1,12 @@
-import { API_ENDPOINT } from '../api.js';
 import { toggleTabIndex } from '../utils/toggleTabIndex.js';
 
 export default class PhotoModal {
-  constructor({ $app, initialState, onClose }) {
+  constructor({ $app, initialState, onClose, onArrowLeft, onArrowRight }) {
     this.state = initialState;
     this.$target = document.createElement('div');
     this.onClose = onClose;
-    this.prevId;
+    this.onArrowLeft = onArrowLeft;
+    this.onArrowRight = onArrowRight;
 
     this.init($app);
   }
@@ -40,8 +40,12 @@ export default class PhotoModal {
     this.render();
 
     this.$target.addEventListener('click', (event) => {
-      if (event.target.closest('.photo-modal__close')) {
+      if (event.target.closest('.photo-modal__close-btn')) {
         this.onClose();
+      } else if (event.target.closest('.photo-modal__move.left')) {
+        this.onArrowLeft(this.state.currentPhoto.index);
+      } else if (event.target.closest('.photo-modal__move.right')) {
+        this.onArrowRight(this.state.currentPhoto.index);
       }
     });
   }
@@ -55,8 +59,18 @@ export default class PhotoModal {
     this.$target.innerHTML = `
       <img class="photo-modal__img">
       <div class="photo-modal__top">
-        <button class="photo-modal__close" aria-label="사진 목록으로 돌아가기">
+        <button class="photo-modal__close-btn" aria-label="사진 목록으로 돌아가기">
           <img src="./src/icons/arrow-left.svg" alt="닫기 아이콘">
+        </button>
+      </div>
+      <div class="photo-modal__move left">
+        <button class="photo-modal__arrow-btn" aria-label="이전 사진 보기">
+          <img src="./src/icons/chevron-left.svg" alt="왼쪽 화살표 아이콘">
+        </button>
+      </div>
+      <div class="photo-modal__move right">
+        <button class="photo-modal__arrow-btn right" aria-label="다음 사진 보기">
+          <img src="./src/icons/chevron-left.svg" alt="오른쪽 화살표 아이콘">
         </button>
       </div>
     `;
@@ -88,23 +102,31 @@ export default class PhotoModal {
       this.$target.style.zIndex = 100;
 
       const $photo = document.querySelector(`.photo[data-id="${currentPhoto._id}"]`);
-      const { offsetTop, offsetLeft, clientWidth, clientHeight } = $photo;
       const { src } = $photo.querySelector('.photo__img');
       const $photoModalImg = this.$target.querySelector('.photo-modal__img');
       $photoModalImg.src = src;
       $photoModalImg.style = '';
-      $photoModalImg.style.top = `${offsetTop - window.scrollY}px`;
-      $photoModalImg.style.left = `${offsetLeft}px`;
-      $photoModalImg.style.height = `${clientHeight}px`;
-      $photoModalImg.style.width = `${clientWidth}px`;
 
-      setTimeout(() => {
+      const expand = () => {
         $photoModalImg.src = `${src}?h=${this.maxSize.height}`;
         $photoModalImg.style.top = `${(window.innerHeight - this.maxSize.height) / 2}px`;
         $photoModalImg.style.left = `${(window.innerWidth - this.maxSize.width) / 2}px`;
         $photoModalImg.style.height = `${this.maxSize.height}px`;
         $photoModalImg.style.width = `${this.maxSize.width}px`;
-      }, 0);
+      };
+
+      if (this.state.isModalMoving) {
+        expand();
+      } else {
+        const { offsetTop, offsetLeft, clientWidth, clientHeight } = $photo;
+        $photoModalImg.style.top = `${offsetTop - window.scrollY}px`;
+        $photoModalImg.style.left = `${offsetLeft}px`;
+        $photoModalImg.style.height = `${clientHeight}px`;
+        $photoModalImg.style.width = `${clientWidth}px`;
+        setTimeout(() => {
+          expand();
+        }, 0);
+      }
     }
   }
 }

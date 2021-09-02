@@ -100,7 +100,7 @@ img {
 }
 
 .photo:focus-visible {
-  outline: 0.25rem solid hsl(330, 100%, 71%);
+  outline: 0.25rem solid hsl(0, 100%, 74%);
 }
 
 .photo-modal {
@@ -124,15 +124,31 @@ img {
     background-color var(--transition-duration) var(--transition-timing-function);
 }
 
+.photo-modal__img {
+  position: absolute;
+  transition: all var(--transition-duration) var(--transition-timing-function);
+}
+
 .photo-modal__top {
+  z-index: 1;
+  position: relative;
   margin: 1rem;
 }
 
 .photo-modal button {
   cursor: pointer;
-  background: 0;
   border: 0;
-  transition: all var(--transition-duration) var(--transition-timing-function);
+  border-radius: 100%;
+  background: 0;
+}
+
+.photo-modal .photo-modal__top button {
+  padding: 0.75rem;
+}
+
+.photo-modal .photo-modal__top button:hover,
+.photo-modal .photo-modal__top button:focus-visible {
+  background: hsl(0, 0%, 15%);
 }
 
 .photo-modal.visible button {
@@ -145,11 +161,52 @@ img {
   opacity: 0;
 }
 
-.photo-modal.hidden .photo-modal__close {
+.photo-modal__close-btn {
+  transition: transform var(--transition-duration) var(--transition-timing-function);
+}
+
+.photo-modal.hidden .photo-modal__close-btn {
   transform: rotate(90deg);
 }
 
-.photo-modal__img {
+.photo-modal__move {
+  cursor: pointer;
   position: absolute;
-  transition: all var(--transition-duration) var(--transition-timing-function);
+  top: 0;
+  display: flex;
+  align-items: center;
+  width: 30%;
+  height: 100vh;
+  padding: 3rem;
+}
+
+.photo-modal__move:hover .photo-modal__arrow-btn,
+.photo-modal__arrow-btn:focus-visible {
+  background-color: hsl(0, 0%, 15%);
+}
+
+.photo-modal__move:hover .photo-modal__arrow-btn img,
+.photo-modal__arrow-btn:focus-visible img {
+  visibility: visible;
+}
+
+.photo-modal__move.left {
+  left: 0;
+}
+
+.photo-modal__move.right {
+  right: 0;
+  justify-content: flex-end;
+}
+
+.photo-modal__arrow-btn {
+  padding: 1rem;
+}
+
+.photo-modal__arrow-btn.right {
+  transform: rotate(180deg);
+}
+
+.photo-modal__arrow-btn img {
+  visibility: hidden;
 }

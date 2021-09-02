@@ -7,7 +7,18 @@ import Photos from './Photos.js';
 
 export default class App {
   constructor($app) {
-    this.state = { photos: [], isLoading: true, currentPhoto: null };
+    this.state = { photos: [], isLoading: true, currentPhoto: null, isModalMoving: false };
+    this.onCloseModal = () => {
+      this.setState({ currentPhoto: null, isModalMoving: false });
+    };
+    this.onModalArrowLeft = (index) => {
+      if (index === 0) return;
+      this.setState({ currentPhoto: this.state.photos[index - 1], isModalMoving: true });
+    };
+    this.onModalArrowRight = (index) => {
+      if (index === this.state.photos.length - 1) return;
+      this.setState({ currentPhoto: this.state.photos[index + 1], isModalMoving: true });
+    };
 
     this.header = new Header({ $app, initialState: { isLoading: this.state.isLoading } });
     this.loading = new Loading({ $app, initialState: { isLoading: this.state.isLoading } });
@@ -23,7 +34,13 @@ export default class App {
       $app,
       initialState: { currentPhoto: this.state.currentPhoto },
       onClose: () => {
-        this.setState({ currentPhoto: null });
+        this.onCloseModal();
+      },
+      onArrowLeft: (index) => {
+        this.onModalArrowLeft(index);
+      },
+      onArrowRight: (index) => {
+        this.onModalArrowRight(index);
       },
     });
 
@@ -36,13 +53,17 @@ export default class App {
     if (has('isLoading')) this.header.setState({ isLoading: this.state.isLoading });
     if (has('isLoading')) this.loading.setState({ isLoading: this.state.isLoading });
     if (has('photos')) this.photos.setState({ photos: this.state.photos });
-    if (has('currentPhoto')) this.photoModal.setState({ currentPhoto: this.state.currentPhoto });
+    if (has('currentPhoto') || has('isModalOpen')) {
+      this.photoModal.setState({ currentPhoto: this.state.currentPhoto, isModalMoving: this.state.isModalMoving });
+    }
   }
 
   async init() {
     try {
       const images = await getImages();
-      const photos = images.results;
+      const photos = images.results.map((image, index) => {
+        return { ...image, index };
+      });
       this.setState({
         photos,
         isLoading: false,
@@ -52,10 +73,17 @@ export default class App {
     }
 
     document.addEventListener('keydown', (event) => {
-      if (event.key === 'Escape' && this.state.currentPhoto) {
-        const $photo = document.querySelector(`.photo[data-id="${this.state.currentPhoto._id}"]`);
+      const { currentPhoto } = this.state;
+      if (!this.state.currentPhoto) return;
+
+      if (event.key === 'Escape') {
+        const $photo = document.querySelector(`.photo[data-id="${currentPhoto._id}"]`);
         $photo.focus();
-        this.setState({ currentPhoto: null });
+        this.onCloseModal();
+      } else if (event.key === 'ArrowLeft') {
+        this.onModalArrowLeft(currentPhoto.index);
+      } else if (event.key === 'ArrowRight') {
+        this.onModalArrowRight(currentPhoto.index);
       }
     });
   }
