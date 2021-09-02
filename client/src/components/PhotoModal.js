@@ -62,6 +62,25 @@ export default class PhotoModal {
         document.body.appendChild($tmp);
         $tmp.click();
         document.body.removeChild($tmp);
+      } else if (event.target.closest('.photo-modal__info-btn')) {
+        const $photoInfoDetail = this.$target.querySelector('.photo-info__detail');
+        if ($photoInfoDetail.classList.contains('visible')) $photoInfoDetail.classList.remove('visible');
+        else $photoInfoDetail.classList.add('visible');
+
+        const { dateTime, filePath, make, model, pixelXDimension, pixelYDimension } = this.state.currentPhoto;
+        const getPixel = () => {
+          const pixel = pixelXDimension * pixelYDimension;
+          if (pixel > 1000000) return Math.round(pixel / 100000) / 10 + '백만';
+          else if (pixel > 10000) return Math.round(pixel / 10000) + '만';
+          return pixel;
+        };
+
+        $photoInfoDetail.innerHTML = `
+          <li>${filePath}</li>
+          <li>${dateTime}</li>
+          <li>${getPixel()}화소, ${pixelXDimension}x${pixelYDimension}</li>
+          ${make && model ? `<li>${make} ${model}</li>` : ''}
+        `;
       }
     });
   }
@@ -79,6 +98,12 @@ export default class PhotoModal {
           <img src="./src/icons/arrow-left.svg" alt="닫기 아이콘">
         </button>
         <div class="photo-modal__top-right">
+          <div class="photo-info">
+            <button class="photo-modal__info-btn" aria-label="사진 정보 보기" title="정보">
+              <img src="./src/icons/info.svg" alt="정보 아이콘">
+            </button>
+            <ul class="photo-info__detail"></ul>
+          </div>
           <button class="photo-modal__download-btn" aria-label="사진 원본 다운로드" title="원본 다운로드">
             <img src="./src/icons/download.svg" alt="다운로드 아이콘">
           </button>
@@ -152,5 +177,8 @@ export default class PhotoModal {
         }, 0);
       }
     }
+
+    const $photoInfoDetail = this.$target.querySelector('.photo-info__detail');
+    $photoInfoDetail.classList.remove('visible');
   }
 }
