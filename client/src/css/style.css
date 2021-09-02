@@ -132,6 +132,8 @@ img {
 .photo-modal__top {
   z-index: 1;
   position: relative;
+  display: flex;
+  justify-content: space-between;
   margin: 1rem;
 }
 

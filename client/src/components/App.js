@@ -1,4 +1,4 @@
-import { getImages } from '../api.js';
+import { getPhotos } from '../utils/getPhotos.js';
 import { toggleTabIndex } from '../utils/toggleTabIndex.js';
 import Header from './Header.js';
 import Loading from './Loading.js';
@@ -20,7 +20,14 @@ export default class App {
       this.setState({ currentPhoto: this.state.photos[index + 1], isModalMoving: true });
     };
 
-    this.header = new Header({ $app, initialState: { isLoading: this.state.isLoading } });
+    this.header = new Header({
+      $app,
+      initialState: { isLoading: this.state.isLoading },
+      onUpload: async () => {
+        const photos = await getPhotos();
+        this.setState({ photos });
+      },
+    });
     this.loading = new Loading({ $app, initialState: { isLoading: this.state.isLoading } });
     this.photos = new Photos({
       $app,
@@ -42,6 +49,11 @@ export default class App {
       onArrowRight: (index) => {
         this.onModalArrowRight(index);
       },
+      onDelete: async () => {
+        const photos = await getPhotos();
+        this.onCloseModal();
+        this.setState({ photos });
+      },
     });
 
     this.init();
@@ -60,14 +72,8 @@ export default class App {
 
   async init() {
     try {
-      const images = await getImages();
-      const photos = images.results.map((image, index) => {
-        return { ...image, index };
-      });
-      this.setState({
-        photos,
-        isLoading: false,
-      });
+      const photos = await getPhotos();
+      this.setState({ photos, isLoading: false });
     } catch (err) {
       console.error(err);
     }

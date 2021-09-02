@@ -17,7 +17,7 @@ module.exports = (function () {
         );
         await this.client.connect();
       } catch (err) {
-        console.error(err);
+        throw new Error(err);
       }
     }
 
@@ -27,7 +27,7 @@ module.exports = (function () {
         const collection = database.collection(collectionName);
         return await collection.find({}).toArray();
       } catch (err) {
-        console.error(err);
+        throw new Error(err);
       }
     }
 
@@ -37,7 +37,7 @@ module.exports = (function () {
         const collection = database.collection(collectionName);
         return await collection.findOne(query);
       } catch (err) {
-        console.error(err);
+        throw new Error(err);
       }
     }
 
@@ -47,7 +47,17 @@ module.exports = (function () {
         const collection = database.collection(collectionName);
         await collection.insertOne(data);
       } catch (err) {
-        console.error(err);
+        throw new Error(err);
+      }
+    }
+
+    async deleteOne(collectionName, query) {
+      try {
+        const database = this.client.db('mongo');
+        const collection = database.collection(collectionName);
+        await collection.deleteOne(query);
+      } catch (err) {
+        throw new Error(err);
       }
     }
   }

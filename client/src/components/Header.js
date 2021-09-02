@@ -3,9 +3,10 @@ import { getDateTime } from '../utils/getDateTime.js';
 import { getExifData } from '../utils/getExifData.js';
 
 export default class Header {
-  constructor({ $app, initialState }) {
+  constructor({ $app, initialState, onUpload }) {
     this.state = initialState;
     this.$target = document.createElement('header');
+    this.onUpload = onUpload;
 
     this.init($app);
   }
@@ -40,6 +41,7 @@ export default class Header {
           formData.append('exifData', JSON.stringify({ dateTime }));
         }
         await postImage(formData);
+        await this.onUpload();
       });
     };
 

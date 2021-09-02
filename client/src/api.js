@@ -23,3 +23,15 @@ export async function postImage(formData) {
     throw new Error(err.message);
   }
 }
+
+export async function deleteImage(imageName) {
+  try {
+    const response = await fetch(`${API_ENDPOINT}/api/image/${imageName}`, {
+      method: 'DELETE',
+    });
+    if (!response.ok) throw new Error('fetch error');
+    return await response.json();
+  } catch (err) {
+    throw new Error(err.message);
+  }
+}

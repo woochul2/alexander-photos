@@ -1,12 +1,14 @@
 import { toggleTabIndex } from '../utils/toggleTabIndex.js';
+import { deleteImage } from '../api.js';
 
 export default class PhotoModal {
-  constructor({ $app, initialState, onClose, onArrowLeft, onArrowRight }) {
+  constructor({ $app, initialState, onClose, onArrowLeft, onArrowRight, onDelete }) {
     this.state = initialState;
     this.$target = document.createElement('div');
     this.onClose = onClose;
     this.onArrowLeft = onArrowLeft;
     this.onArrowRight = onArrowRight;
+    this.onDelete = onDelete;
 
     this.init($app);
   }
@@ -39,13 +41,16 @@ export default class PhotoModal {
     $app.appendChild(this.$target);
     this.render();
 
-    this.$target.addEventListener('click', (event) => {
+    this.$target.addEventListener('click', async (event) => {
       if (event.target.closest('.photo-modal__close-btn')) {
         this.onClose();
       } else if (event.target.closest('.photo-modal__move.left')) {
         this.onArrowLeft(this.state.currentPhoto.index);
       } else if (event.target.closest('.photo-modal__move.right')) {
         this.onArrowRight(this.state.currentPhoto.index);
+      } else if (event.target.closest('.photo-modal__delete-btn')) {
+        await deleteImage(this.state.currentPhoto.filePath);
+        await this.onDelete();
       }
     });
   }
@@ -62,6 +67,11 @@ export default class PhotoModal {
         <button class="photo-modal__close-btn" aria-label="사진 목록으로 돌아가기">
           <img src="./src/icons/arrow-left.svg" alt="닫기 아이콘">
         </button>
+        <div class="photo-modal__top-right">
+          <button class="photo-modal__delete-btn" aria-label="사진 삭제하기" title="삭제">
+            <img src="./src/icons/trash.svg" alt="삭제 아이콘">
+          </button>
+        </div>
       </div>
       <div class="photo-modal__move left">
         <button class="photo-modal__arrow-btn" aria-label="이전 사진 보기">

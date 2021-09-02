@@ -39,8 +39,6 @@ router.post('/', upload.single('photo'), async (req, res) => {
       .promise();
   };
 
-  uploadToS3();
-
   const exifData = { ...JSON.parse(req.body.exifData || null) };
   if (!exifData.dateTime) exifData.dateTime = getDateTime();
   if (!exifData.pixelXDimension || !exifData.pixelYDimension) {
@@ -48,15 +46,46 @@ router.post('/', upload.single('photo'), async (req, res) => {
     exifData.pixelXDimension = width;
     exifData.pixelYDimension = height;
   }
-
   const photo = { filePath: req.file.originalname, ...exifData };
 
-  try {
+  const insertToDatabase = async () => {
     const image = await Database.findOne('images', photo);
     if (!image) await Database.insertOne('images', photo);
+  };
+
+  try {
+    await Promise.all([uploadToS3(), insertToDatabase()]);
     res.status(201).json({
-      message: 'Uploaded image successfully',
+      message: `Uploaded ${req.file.originalname} successfully`,
       result: photo,
+    });
+  } catch (err) {
+    res.status(500).json({
+      error: err.message,
+    });
+  }
+});
+
+router.delete('/:imageName', async (req, res) => {
+  try {
+    const { imageName } = req.params;
+    const query = { filePath: imageName };
+    const image = await Database.findOne('images', query);
+    if (!image) throw new Error(`${imageName} does not exist`);
+
+    const deleteFromS3 = async () => {
+      await s3
+        .deleteObject({
+          Bucket: IMG_BUCKET,
+          Key: imageName,
+        })
+        .promise();
+    };
+    deleteFromS3();
+
+    await Database.deleteOne('images', query);
+    res.status(200).json({
+      message: `Deleted ${imageName} successfully`,
     });
   } catch (err) {
     res.status(500).json({
