@@ -137,6 +137,11 @@ img {
   margin: 1rem;
 }
 
+.photo-modal__top-right {
+  display: flex;
+  gap: 0.25rem;
+}
+
 .photo-modal button {
   cursor: pointer;
   border: 0;
@@ -148,9 +153,8 @@ img {
   padding: 0.75rem;
 }
 
-.photo-modal .photo-modal__top button:hover,
-.photo-modal .photo-modal__top button:focus-visible {
-  background: hsl(0, 0%, 15%);
+.photo-modal .photo-modal__top button:hover {
+  background: hsl(0, 0%, 10%);
 }
 
 .photo-modal.visible button {

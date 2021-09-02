@@ -1,5 +1,5 @@
+import { API_ENDPOINT, deleteImage } from '../api.js';
 import { toggleTabIndex } from '../utils/toggleTabIndex.js';
-import { deleteImage } from '../api.js';
 
 export default class PhotoModal {
   constructor({ $app, initialState, onClose, onArrowLeft, onArrowRight, onDelete }) {
@@ -51,6 +51,17 @@ export default class PhotoModal {
       } else if (event.target.closest('.photo-modal__delete-btn')) {
         await deleteImage(this.state.currentPhoto.filePath);
         await this.onDelete();
+      } else if (event.target.closest('.photo-modal__download-btn')) {
+        const { filePath } = this.state.currentPhoto;
+        const imagePath = encodeURI(`${API_ENDPOINT}/image/original/${filePath}`);
+        const image = await fetch(imagePath);
+        const imageBlob = await image.blob();
+        const $tmp = document.createElement('a');
+        $tmp.href = URL.createObjectURL(imageBlob);
+        $tmp.download = filePath;
+        document.body.appendChild($tmp);
+        $tmp.click();
+        document.body.removeChild($tmp);
       }
     });
   }
@@ -68,6 +79,9 @@ export default class PhotoModal {
           <img src="./src/icons/arrow-left.svg" alt="닫기 아이콘">
         </button>
         <div class="photo-modal__top-right">
+          <button class="photo-modal__download-btn" aria-label="사진 원본 다운로드" title="원본 다운로드">
+            <img src="./src/icons/download.svg" alt="다운로드 아이콘">
+          </button>
           <button class="photo-modal__delete-btn" aria-label="사진 삭제하기" title="삭제">
             <img src="./src/icons/trash.svg" alt="삭제 아이콘">
           </button>
