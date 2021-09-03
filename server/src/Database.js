@@ -25,7 +25,7 @@ module.exports = (function () {
       try {
         const database = this.client.db('mongo');
         const collection = database.collection(collectionName);
-        return await collection.find({}).toArray();
+        return await collection.find({}).sort({ _id: -1 }).toArray();
       } catch (err) {
         throw new Error(err);
       }
