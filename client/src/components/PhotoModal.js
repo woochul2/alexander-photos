@@ -1,4 +1,5 @@
 import { API_ENDPOINT, deleteImage } from '../api.js';
+import { getScrollbarWidth } from '../utils/getScrollbarWidth.js';
 import { toggleTabIndex } from '../utils/toggleTabIndex.js';
 
 export default class PhotoModal {
@@ -144,6 +145,7 @@ export default class PhotoModal {
     } else {
       this.prevId = currentPhoto._id;
       document.body.style.overflow = 'hidden';
+      document.body.style.paddingRight = `${getScrollbarWidth()}px`;
       this.$target.classList.remove('hidden');
       this.$target.classList.add('visible');
       this.$target.style = '';
