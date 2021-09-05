@@ -5,6 +5,7 @@ export function getExifData(file) {
         dateTime: EXIF.getTag(this, 'DateTime'),
         make: EXIF.getTag(this, 'Make'),
         model: EXIF.getTag(this, 'Model'),
+        orientation: EXIF.getTag(this, 'Orientation'),
         pixelXDimension: EXIF.getTag(this, 'PixelXDimension'),
         pixelYDimension: EXIF.getTag(this, 'PixelYDimension'),
       };

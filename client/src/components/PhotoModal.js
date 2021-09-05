@@ -77,7 +77,8 @@ export default class PhotoModal {
         if ($photoInfoDetail.classList.contains('visible')) $photoInfoDetail.classList.remove('visible');
         else $photoInfoDetail.classList.add('visible');
 
-        const { dateTime, filePath, make, model, pixelXDimension, pixelYDimension } = this.state.currentPhoto;
+        const { dateTime, filePath, make, model, orientation, pixelXDimension, pixelYDimension } =
+          this.state.currentPhoto;
 
         const getDateTime = () => {
           const matchResult = dateTime.match(
@@ -94,10 +95,15 @@ export default class PhotoModal {
           return pixel;
         };
 
+        const getPixelDimension = () => {
+          if (orientation >= 5 && orientation <= 8) return `${pixelYDimension}x${pixelXDimension}`;
+          return `${pixelXDimension}x${pixelYDimension}`;
+        };
+
         $photoInfoDetail.innerHTML = `
           <li><b>이름</b>: ${filePath}</li>
           <li><b>생성 날짜</b>: ${getDateTime()}</li>
-          <li><b>해상도</b>: ${getPixel()} 화소 (${pixelXDimension}x${pixelYDimension})</li>
+          <li><b>해상도</b>: ${getPixel()} 화소 (${getPixelDimension()})</li>
           ${make && model ? `<li><b>카메라 모델</b>: ${make} ${model}</li>` : ''}
         `;
       }

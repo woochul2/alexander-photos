@@ -41,6 +41,7 @@ router.post('/', upload.single('photo'), async (req, res) => {
 
   const exifData = { ...JSON.parse(req.body.exifData || null) };
   if (!exifData.dateTime) exifData.dateTime = getDateTime();
+  if (!exifData.orientation) exifData.orientation = 1;
   if (!exifData.pixelXDimension || !exifData.pixelYDimension) {
     const { width, height } = await sharp(req.file.path).metadata();
     exifData.pixelXDimension = width;
