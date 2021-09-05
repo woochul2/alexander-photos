@@ -191,7 +191,9 @@ img {
   gap: 0.25rem;
   width: 20rem;
   padding-top: 1rem;
+  padding-right: 0.5rem;
   padding-bottom: 1rem;
+  word-break: break-all;
   background-color: hsla(0, 0%, 100%, 0.8);
   border-radius: 0.25rem;
   box-shadow: 0 0.15rem 1rem hsla(0, 0%, 0%, 0.25);
