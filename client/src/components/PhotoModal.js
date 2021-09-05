@@ -78,6 +78,15 @@ export default class PhotoModal {
         else $photoInfoDetail.classList.add('visible');
 
         const { dateTime, filePath, make, model, pixelXDimension, pixelYDimension } = this.state.currentPhoto;
+
+        const getDateTime = () => {
+          const matchResult = dateTime.match(
+            /(?<year>\w+):(?<month>\w+):(?<date>\w+) (?<hours>\w+):(?<seconds>\w+):(\w+)/
+          );
+          const { year, month, date, hours, seconds } = matchResult.groups;
+          return `${year}년 ${parseInt(month)}월 ${parseInt(date)}일 ${hours}:${seconds}`;
+        };
+
         const getPixel = () => {
           const pixel = pixelXDimension * pixelYDimension;
           if (pixel > 1000000) return Math.round(pixel / 100000) / 10 + '백만';
@@ -86,10 +95,10 @@ export default class PhotoModal {
         };
 
         $photoInfoDetail.innerHTML = `
-          <li>${filePath}</li>
-          <li>${dateTime}</li>
-          <li>${getPixel()}화소, ${pixelXDimension}x${pixelYDimension}</li>
-          ${make && model ? `<li>${make} ${model}</li>` : ''}
+          <li><b>이름</b>: ${filePath}</li>
+          <li><b>생성 날짜</b>: ${getDateTime()}</li>
+          <li><b>해상도</b>: ${getPixel()} 화소 (${pixelXDimension}x${pixelYDimension})</li>
+          ${make && model ? `<li><b>카메라 모델</b>: ${make} ${model}</li>` : ''}
         `;
       }
     });
