@@ -163,7 +163,7 @@ export default class PhotoModal {
     } else {
       this.prevId = currentPhoto._id;
       document.body.style.overflow = 'hidden';
-      if (window.innerHeight > document.body.clientHeight) {
+      if (window.innerHeight < document.body.clientHeight) {
         document.body.style.paddingRight = `${getScrollbarWidth()}px`;
       }
       this.$target.classList.remove('hidden');
