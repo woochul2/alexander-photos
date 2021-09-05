@@ -52,6 +52,8 @@ export default class PhotoModal {
       } else if (event.target.closest('.photo-modal__delete-btn')) {
         await deleteImage(this.state.currentPhoto.filePath);
         await this.onDelete();
+        const $photoModalImg = this.$target.querySelector('.photo-modal__img');
+        $photoModalImg.src = '';
       } else if (event.target.closest('.photo-modal__download-btn')) {
         const { filePath } = this.state.currentPhoto;
         const imagePath = encodeURI(`${API_ENDPOINT}/image/original/${filePath}`);
