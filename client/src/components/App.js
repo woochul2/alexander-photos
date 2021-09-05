@@ -83,6 +83,12 @@ export default class App {
       if (!this.state.currentPhoto) return;
 
       if (event.key === 'Escape') {
+        const $photoDeleteConfirm = document.querySelector('.photo-delete-confirm');
+        if ($photoDeleteConfirm.classList.contains('visible')) {
+          $photoDeleteConfirm.classList.remove('visible');
+          return;
+        }
+
         const $photo = document.querySelector(`.photo[data-id="${currentPhoto._id}"]`);
         $photo.focus();
         this.onCloseModal();

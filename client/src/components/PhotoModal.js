@@ -49,7 +49,14 @@ export default class PhotoModal {
         this.onArrowLeft(this.state.currentPhoto.index);
       } else if (event.target.closest('.photo-modal__move.right')) {
         this.onArrowRight(this.state.currentPhoto.index);
-      } else if (event.target.closest('.photo-modal__delete-btn')) {
+      } else if (event.target.closest('.photo-delete__btn')) {
+        const $photoDeleteConfirm = this.$target.querySelector('.photo-delete-confirm');
+        if ($photoDeleteConfirm.classList.contains('visible')) $photoDeleteConfirm.classList.remove('visible');
+        else $photoDeleteConfirm.classList.add('visible');
+      } else if (event.target.closest('.photo-delete-confirm__cancel-btn')) {
+        const $photoDeleteConfirm = this.$target.querySelector('.photo-delete-confirm');
+        $photoDeleteConfirm.classList.remove('visible');
+      } else if (event.target.closest('.photo-delete-confirm__delete-btn')) {
         await deleteImage(this.state.currentPhoto.filePath);
         await this.onDelete();
         const $photoModalImg = this.$target.querySelector('.photo-modal__img');
@@ -65,7 +72,7 @@ export default class PhotoModal {
         document.body.appendChild($tmp);
         $tmp.click();
         document.body.removeChild($tmp);
-      } else if (event.target.closest('.photo-modal__info-btn')) {
+      } else if (event.target.closest('.photo-info__btn')) {
         const $photoInfoDetail = this.$target.querySelector('.photo-info__detail');
         if ($photoInfoDetail.classList.contains('visible')) $photoInfoDetail.classList.remove('visible');
         else $photoInfoDetail.classList.add('visible');
@@ -97,31 +104,40 @@ export default class PhotoModal {
     this.$target.innerHTML = `
       <img class="photo-modal__img">
       <div class="photo-modal__top">
-        <button class="photo-modal__close-btn" aria-label="사진 목록으로 돌아가기">
+        <button class="btn photo-modal__close-btn" aria-label="사진 목록으로 돌아가기">
           <img src="./src/icons/arrow-left.svg" alt="닫기 아이콘">
         </button>
         <div class="photo-modal__top-right">
           <div class="photo-info">
-            <button class="photo-modal__info-btn" aria-label="사진 정보 보기" title="정보">
+            <button class="btn photo-info__btn" aria-label="사진 정보 보기" title="정보">
               <img src="./src/icons/info.svg" alt="정보 아이콘">
             </button>
             <ul class="photo-info__detail"></ul>
           </div>
-          <button class="photo-modal__download-btn" aria-label="사진 원본 다운로드" title="원본 다운로드">
+          <button class="btn photo-modal__download-btn" aria-label="사진 원본 다운로드" title="원본 다운로드">
             <img src="./src/icons/download.svg" alt="다운로드 아이콘">
           </button>
-          <button class="photo-modal__delete-btn" aria-label="사진 삭제하기" title="삭제">
-            <img src="./src/icons/trash.svg" alt="삭제 아이콘">
-          </button>
+          <div class="photo-delete">
+            <button class="btn photo-delete__btn" aria-label="사진 삭제하기" title="삭제">
+              <img src="./src/icons/trash.svg" alt="삭제 아이콘">
+            </button>
+            <div class="photo-delete-confirm">
+              <p class="photo-delete-confirm__description">삭제 후 이미지는 복구할 수 없습니다. 그래도 삭제하시겠습니까?</p>
+              <div class="photo-delete-confirm__buttons">
+                <button class="photo-delete-confirm__cancel-btn">취소</button>
+                <button class="photo-delete-confirm__delete-btn">삭제</button>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
       <div class="photo-modal__move left">
-        <button class="photo-modal__arrow-btn" aria-label="이전 사진 보기">
+        <button class="btn photo-modal__arrow-btn" aria-label="이전 사진 보기">
           <img src="./src/icons/chevron-left.svg" alt="왼쪽 화살표 아이콘">
         </button>
       </div>
       <div class="photo-modal__move right">
-        <button class="photo-modal__arrow-btn right" aria-label="다음 사진 보기">
+        <button class="btn photo-modal__arrow-btn right" aria-label="다음 사진 보기">
           <img src="./src/icons/chevron-left.svg" alt="오른쪽 화살표 아이콘">
         </button>
       </div>
@@ -186,5 +202,7 @@ export default class PhotoModal {
 
     const $photoInfoDetail = this.$target.querySelector('.photo-info__detail');
     $photoInfoDetail.classList.remove('visible');
+    const $photoDeleteConfirm = this.$target.querySelector('.photo-delete-confirm');
+    $photoDeleteConfirm.classList.remove('visible');
   }
 }

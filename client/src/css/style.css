@@ -143,18 +143,18 @@ img {
   gap: 0.25rem;
 }
 
-.photo-modal button {
+.photo-modal .btn {
   cursor: pointer;
   border: 0;
   border-radius: 100%;
   background: 0;
 }
 
-.photo-modal .photo-modal__top button {
+.photo-modal .photo-modal__top .btn {
   padding: 0.75rem;
 }
 
-.photo-modal .photo-modal__top button:hover {
+.photo-modal .photo-modal__top .btn:hover {
   background: hsl(0, 0%, 10%);
 }
 
@@ -197,6 +197,63 @@ img {
 
 .photo-info__detail.visible {
   display: flex;
+}
+
+.photo-delete {
+  position: relative;
+}
+
+.photo-delete-confirm {
+  position: absolute;
+  top: 120%;
+  right: 0;
+  display: none;
+  width: 16rem;
+  padding: 1rem;
+  color: hsl(0, 0%, 40%);
+  background-color: hsl(0, 0%, 100%);
+  border-radius: 0.25rem;
+  box-shadow: 0 0.15rem 1rem hsla(0, 0%, 0%, 0.25);
+}
+
+.photo-delete-confirm:after {
+  content: '';
+  position: absolute;
+  bottom: 100%;
+  right: 1rem;
+  border-width: 0.5rem;
+  border-style: solid;
+  border-color: transparent transparent hsl(0, 0%, 100%);
+}
+
+.photo-delete-confirm.visible {
+  display: block;
+}
+
+.photo-delete-confirm__buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.photo-delete-confirm button {
+  cursor: pointer;
+  border: 0;
+  background: 0;
+  padding: 0.5rem;
+  border-radius: 0.25rem;
+}
+
+.photo-delete-confirm__cancel-btn:hover {
+  background: hsl(0, 0%, 95%);
+}
+
+.photo-delete-confirm__delete-btn {
+  color: hsl(0, 100%, 50%);
+}
+.photo-delete-confirm__delete-btn:hover {
+  background: hsl(0, 100%, 95%);
 }
 
 .photo-modal__move {
