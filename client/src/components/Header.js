@@ -63,7 +63,7 @@ export default class Header {
     `;
 
     this.$target.innerHTML = `
-      <h1 class="header__title">알렉산더 포토</h1>
+      <a class="header__title" href="#">알렉산더 포토</a>
       <div class="header__right">
         <a href="https://github.com/woochul2/alexander-photos" class="github-icon" aria-label="깃허브" target="_blank">
           <i class="fab fa-github"></i>

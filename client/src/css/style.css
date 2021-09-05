@@ -34,7 +34,9 @@ img {
   font-family: 'Single Day';
   font-weight: normal;
   font-size: 1.5rem;
+  text-decoration: none;
   padding-top: 0.25rem;
+  color: inherit;
 }
 
 .header__right {
