@@ -67,18 +67,18 @@ router.post('/', upload.single('photo'), async (req, res) => {
   }
 });
 
-router.delete('/:imageName', async (req, res) => {
+router.delete('/:filePath', async (req, res) => {
   try {
-    const { imageName } = req.params;
-    const query = { filePath: imageName };
+    const { filePath } = req.params;
+    const query = { filePath: filePath };
     const image = await Database.findOne('images', query);
-    if (!image) throw new Error(`${imageName} does not exist`);
+    if (!image) throw new Error(`${filePath} does not exist`);
 
     const deleteFromS3 = async () => {
       await s3
         .deleteObject({
           Bucket: IMG_BUCKET,
-          Key: imageName,
+          Key: filePath,
         })
         .promise();
     };
@@ -86,7 +86,7 @@ router.delete('/:imageName', async (req, res) => {
 
     await Database.deleteOne('images', query);
     res.status(200).json({
-      message: `Deleted ${imageName} successfully`,
+      message: `Deleted ${filePath} successfully`,
     });
   } catch (err) {
     res.status(500).json({

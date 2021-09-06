@@ -24,9 +24,9 @@ export async function postImage(formData) {
   }
 }
 
-export async function deleteImage(imageName) {
+export async function deleteImage(filePath) {
   try {
-    const response = await fetch(`${API_ENDPOINT}/api/image/${imageName}`, {
+    const response = await fetch(`${API_ENDPOINT}/api/image/${filePath}`, {
       method: 'DELETE',
     });
     if (!response.ok) throw new Error('fetch error');

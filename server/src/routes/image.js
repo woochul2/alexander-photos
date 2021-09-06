@@ -6,12 +6,12 @@ const { IMG_BUCKET } = require('../constants');
 const router = express.Router();
 const s3 = new aws.S3();
 
-router.get('/:imageName', async (req, res) => {
+router.get('/:filePath', async (req, res) => {
   try {
     const s3Object = await s3
       .getObject({
         Bucket: IMG_BUCKET,
-        Key: req.params.imageName,
+        Key: req.params.filePath,
       })
       .promise();
 
@@ -35,12 +35,12 @@ router.get('/:imageName', async (req, res) => {
   }
 });
 
-router.get('/original/:imageName', async (req, res) => {
+router.get('/original/:filePath', async (req, res) => {
   try {
     const s3Object = await s3
       .getObject({
         Bucket: IMG_BUCKET,
-        Key: req.params.imageName,
+        Key: req.params.filePath,
       })
       .promise();
 
