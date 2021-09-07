@@ -17,19 +17,16 @@ export default class Header {
     this.render();
 
     const uploadButtonClickEvent = (event) => {
-      const $uploadButton = event.target.closest('.upload-btn');
-      if (!$uploadButton) return;
-
+      if (!event.target.closest('.upload-btn')) return;
       const $uploadButtonInput = this.$target.querySelector('.upload-btn-input');
       $uploadButtonInput.click();
     };
 
     const uploadButtonInputChangeEvent = async (event) => {
-      const $uploadButtonInput = event.target.closest('.upload-btn-input');
-      if (!$uploadButtonInput) return;
+      if (!event.target.closest('.upload-btn-input')) return;
 
       const { files } = event.target;
-      Object.keys(files).forEach(async (key) => {
+      const uploadFile = async (key) => {
         const formData = new FormData();
         const file = files[key];
         formData.append('photo', file);
@@ -42,7 +39,8 @@ export default class Header {
         }
         await postImage(formData);
         await this.onUpload();
-      });
+      };
+      Object.keys(files).forEach(uploadFile);
     };
 
     this.$target.addEventListener('click', uploadButtonClickEvent);

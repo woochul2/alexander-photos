@@ -1,6 +1,7 @@
 import { API_ENDPOINT, deleteImage } from '../api.js';
 import { getScrollbarWidth } from '../utils/getScrollbarWidth.js';
-import { toggleTabIndex } from '../utils/toggleTabIndex.js';
+import { toggleClass } from '../utils/toggleClass.js';
+import { toggleMainTabIndex } from '../utils/toggleMainTabIndex.js';
 
 export default class PhotoModal {
   constructor({ $app, initialState, onClose, onArrowLeft, onArrowRight, onDelete }) {
@@ -36,32 +37,32 @@ export default class PhotoModal {
     };
   }
 
-  init($app) {
-    this.$target.className = 'photo-modal';
-    this.$target.classList.add('hidden');
-    $app.appendChild(this.$target);
-    this.render();
-
-    this.$target.addEventListener('click', async (event) => {
-      if (event.target.closest('.photo-modal__close-btn')) {
+  get clickEvents() {
+    return {
+      close: () => {
         this.onClose();
-      } else if (event.target.closest('.photo-modal__move.left')) {
+      },
+      moveLeft: () => {
         this.onArrowLeft(this.state.currentPhoto.index);
-      } else if (event.target.closest('.photo-modal__move.right')) {
+      },
+      moveRight: () => {
         this.onArrowRight(this.state.currentPhoto.index);
-      } else if (event.target.closest('.photo-delete__btn')) {
+      },
+      delete: () => {
         const $photoDeleteConfirm = this.$target.querySelector('.photo-delete-confirm');
-        if ($photoDeleteConfirm.classList.contains('visible')) $photoDeleteConfirm.classList.remove('visible');
-        else $photoDeleteConfirm.classList.add('visible');
-      } else if (event.target.closest('.photo-delete-confirm__cancel-btn')) {
+        toggleClass($photoDeleteConfirm, 'visible');
+      },
+      cancelDelete: () => {
         const $photoDeleteConfirm = this.$target.querySelector('.photo-delete-confirm');
         $photoDeleteConfirm.classList.remove('visible');
-      } else if (event.target.closest('.photo-delete-confirm__delete-btn')) {
+      },
+      confirmDelete: async () => {
         await deleteImage(this.state.currentPhoto.filePath);
         await this.onDelete();
         const $photoModalImg = this.$target.querySelector('.photo-modal__img');
         $photoModalImg.src = '';
-      } else if (event.target.closest('.photo-modal__download-btn')) {
+      },
+      download: async () => {
         const { filePath } = this.state.currentPhoto;
         const imagePath = encodeURI(`${API_ENDPOINT}/image/original/${filePath}`);
         const image = await fetch(imagePath);
@@ -72,11 +73,10 @@ export default class PhotoModal {
         document.body.appendChild($tmp);
         $tmp.click();
         document.body.removeChild($tmp);
-      } else if (event.target.closest('.photo-info__btn')) {
+      },
+      info: () => {
         const $photoInfoDetail = this.$target.querySelector('.photo-info__detail');
-        if ($photoInfoDetail.classList.contains('visible')) $photoInfoDetail.classList.remove('visible');
-        else $photoInfoDetail.classList.add('visible');
-
+        toggleClass($photoInfoDetail, 'visible');
         const { dateTime, filePath, make, model, orientation, pixelXDimension, pixelYDimension } =
           this.state.currentPhoto;
 
@@ -106,7 +106,25 @@ export default class PhotoModal {
           <li><b>해상도</b>: ${getPixel()} 화소 (${getPixelDimension()})</li>
           ${make && model ? `<li><b>카메라 모델</b>: ${make} ${model}</li>` : ''}
         `;
-      }
+      },
+    };
+  }
+
+  init($app) {
+    this.$target.className = 'photo-modal';
+    this.$target.classList.add('hidden');
+    $app.appendChild(this.$target);
+    this.render();
+
+    this.$target.addEventListener('click', async (event) => {
+      if (event.target.closest('.photo-modal__close-btn')) this.clickEvents.close();
+      else if (event.target.closest('.photo-modal__move.left')) this.clickEvents.moveLeft();
+      else if (event.target.closest('.photo-modal__move.right')) this.clickEvents.moveRight();
+      else if (event.target.closest('.photo-delete__btn')) this.clickEvents.delete();
+      else if (event.target.closest('.photo-delete-confirm__cancel-btn')) this.clickEvents.cancelDelete();
+      else if (event.target.closest('.photo-delete-confirm__delete-btn')) await this.clickEvents.confirmDelete();
+      else if (event.target.closest('.photo-modal__download-btn')) await this.clickEvents.download();
+      else if (event.target.closest('.photo-info__btn')) this.clickEvents.info();
     });
   }
 
@@ -174,7 +192,7 @@ export default class PhotoModal {
       $photoModalImg.style.left = `${offsetLeft}px`;
       $photoModalImg.style.height = `${clientHeight}px`;
       $photoModalImg.style.width = 'auto';
-      toggleTabIndex();
+      toggleMainTabIndex();
     } else {
       this.prevId = currentPhoto._id;
       document.body.style.overflow = 'hidden';

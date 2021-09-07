@@ -1,5 +1,5 @@
 import { getPhotos } from '../utils/getPhotos.js';
-import { toggleTabIndex } from '../utils/toggleTabIndex.js';
+import { toggleMainTabIndex } from '../utils/toggleMainTabIndex.js';
 import Header from './Header.js';
 import Loading from './Loading.js';
 import PhotoModal from './PhotoModal.js';
@@ -34,21 +34,15 @@ export default class App {
       initialState: { photos: this.state.photos },
       onClick: (photo) => {
         this.setState({ currentPhoto: photo });
-        toggleTabIndex();
+        toggleMainTabIndex();
       },
     });
     this.photoModal = new PhotoModal({
       $app,
       initialState: { currentPhoto: this.state.currentPhoto },
-      onClose: () => {
-        this.onCloseModal();
-      },
-      onArrowLeft: (index) => {
-        this.onModalArrowLeft(index);
-      },
-      onArrowRight: (index) => {
-        this.onModalArrowRight(index);
-      },
+      onClose: this.onCloseModal,
+      onArrowLeft: this.onModalArrowLeft,
+      onArrowRight: this.onModalArrowRight,
       onDelete: async () => {
         const photos = await getPhotos();
         this.onCloseModal();
@@ -62,10 +56,12 @@ export default class App {
   setState(nextState) {
     this.state = { ...this.state, ...nextState };
     const has = (property) => nextState.hasOwnProperty(property);
-    if (has('isLoading')) this.header.setState({ isLoading: this.state.isLoading });
-    if (has('isLoading')) this.loading.setState({ isLoading: this.state.isLoading });
+    if (has('isLoading')) {
+      this.header.setState({ isLoading: this.state.isLoading });
+      this.loading.setState({ isLoading: this.state.isLoading });
+    }
     if (has('photos')) this.photos.setState({ photos: this.state.photos });
-    if (has('currentPhoto') || has('isModalOpen')) {
+    if (has('currentPhoto') || has('isModalMoving')) {
       this.photoModal.setState({ currentPhoto: this.state.currentPhoto, isModalMoving: this.state.isModalMoving });
     }
   }
@@ -80,7 +76,7 @@ export default class App {
 
     document.addEventListener('keydown', (event) => {
       const { currentPhoto } = this.state;
-      if (!this.state.currentPhoto) return;
+      if (!currentPhoto) return;
 
       if (event.key === 'Escape') {
         const $photoDeleteConfirm = document.querySelector('.photo-delete-confirm');

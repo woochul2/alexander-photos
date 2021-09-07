@@ -3,7 +3,7 @@ function toggle($element) {
   else $element.tabIndex = -1;
 }
 
-export function toggleTabIndex() {
+export function toggleMainTabIndex() {
   const $photos = document.querySelectorAll('.photo');
   $photos.forEach(($photo) => {
     toggle($photo);
