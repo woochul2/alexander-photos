@@ -195,10 +195,10 @@ export default class PhotoModal {
       toggleMainTabIndex();
     } else {
       this.prevId = currentPhoto._id;
-      document.body.style.overflow = 'hidden';
       if (window.innerHeight < document.body.clientHeight) {
         document.body.style.paddingRight = `${getScrollbarWidth()}px`;
       }
+      document.body.style.overflow = 'hidden';
       this.$target.classList.remove('hidden');
       this.$target.classList.add('visible');
       this.$target.style = '';
