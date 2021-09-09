@@ -184,7 +184,6 @@ export default class PhotoModal {
         const $photo = document.querySelector(`.photo[data-id="${this.prevPhoto._id}"]`);
         const { offsetTop, offsetLeft, clientHeight } = $photo;
         const $photoModalImg = this.$target.querySelector('.photo-modal__img');
-        document.body.style = '';
         this.$target.classList.remove('visible');
         this.$target.classList.add('hidden');
         this.$target.style.zIndex = '';
@@ -193,6 +192,10 @@ export default class PhotoModal {
         $photoModalImg.style.height = `${clientHeight}px`;
         $photoModalImg.style.width = 'auto';
         toggleMainTabIndex();
+        const transitionDuration = getComputedStyle(document.documentElement).getPropertyValue('--transition-duration');
+        setTimeout(() => {
+          document.body.style = '';
+        }, parseFloat(transitionDuration) * 1000);
       },
       expand: () => {
         const { currentPhoto } = this.state;
