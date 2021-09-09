@@ -123,13 +123,12 @@ img {
 .photo-modal.hidden {
   visibility: hidden;
   background-color: hsla(0, 0%, 0%, 0);
-  transition: visibility 0s var(--transition-duration),
+  transition: visibility 0s var(--transition-duration) var(--transition-timing-function),
     background-color var(--transition-duration) var(--transition-timing-function);
 }
 
 .photo-modal__img {
   position: absolute;
-  transition: all var(--transition-duration) var(--transition-timing-function);
 }
 
 .photo-modal__top {

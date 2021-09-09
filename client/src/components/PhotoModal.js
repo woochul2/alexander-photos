@@ -15,28 +15,6 @@ export default class PhotoModal {
     this.init($app);
   }
 
-  get maxSize() {
-    const { currentPhoto } = this.state;
-    const $photo = document.querySelector(`.photo[data-id="${currentPhoto._id}"]`);
-    const { clientWidth, clientHeight } = $photo;
-    const { pixelYDimension } = currentPhoto;
-
-    let height = Math.min(window.innerHeight, pixelYDimension);
-    let scaleRatio = height / clientHeight;
-    let width = clientWidth * scaleRatio;
-
-    if (width > window.innerWidth) {
-      width = window.innerWidth;
-      scaleRatio = width / clientWidth;
-      height = clientHeight * scaleRatio;
-    }
-
-    return {
-      width,
-      height,
-    };
-  }
-
   get clickEvents() {
     return {
       close: () => {
@@ -130,7 +108,7 @@ export default class PhotoModal {
 
   setState(nextState) {
     this.state = nextState;
-    this.animation();
+    this.playAnimation();
   }
 
   render() {
@@ -177,65 +155,116 @@ export default class PhotoModal {
     `;
   }
 
-  animation() {
+  get maxSize() {
     const { currentPhoto } = this.state;
-    if (!currentPhoto) {
-      if (!this.prevId) return;
-      const $photo = document.querySelector(`.photo[data-id="${this.prevId}"]`);
-      const { offsetTop, offsetLeft, clientHeight } = $photo;
-      const $photoModalImg = this.$target.querySelector('.photo-modal__img');
-      document.body.style = '';
-      this.$target.classList.remove('visible');
-      this.$target.classList.add('hidden');
-      this.$target.style.zIndex = '';
-      $photoModalImg.style.top = `${offsetTop - window.scrollY}px`;
-      $photoModalImg.style.left = `${offsetLeft}px`;
-      $photoModalImg.style.height = `${clientHeight}px`;
-      $photoModalImg.style.width = 'auto';
-      toggleMainTabIndex();
-    } else {
-      this.prevId = currentPhoto._id;
-      if (window.innerHeight < document.body.clientHeight) {
-        document.body.style.paddingRight = `${getScrollbarWidth()}px`;
-      }
-      document.body.style.overflow = 'hidden';
-      this.$target.classList.remove('hidden');
-      this.$target.classList.add('visible');
-      this.$target.style = '';
-      this.$target.style.top = `${window.scrollY}px`;
-      this.$target.style.zIndex = 100;
+    const $photo = document.querySelector(`.photo[data-id="${currentPhoto._id}"]`);
+    const { clientWidth, clientHeight } = $photo;
+    const { pixelYDimension } = currentPhoto;
 
-      const $photo = document.querySelector(`.photo[data-id="${currentPhoto._id}"]`);
-      const { src } = $photo.querySelector('.photo__img');
-      const $photoModalImg = this.$target.querySelector('.photo-modal__img');
-      $photoModalImg.src = src;
-      $photoModalImg.style = '';
+    let height = Math.min(window.innerHeight, pixelYDimension);
+    let scaleRatio = height / clientHeight;
+    let width = clientWidth * scaleRatio;
 
-      const expand = () => {
-        $photoModalImg.src = `${src}?h=${this.maxSize.height}`;
-        $photoModalImg.style.top = `${(window.innerHeight - this.maxSize.height) / 2}px`;
-        $photoModalImg.style.left = `${(window.innerWidth - this.maxSize.width) / 2}px`;
-        $photoModalImg.style.height = `${this.maxSize.height}px`;
-        $photoModalImg.style.width = `${this.maxSize.width}px`;
-      };
+    if (width > window.innerWidth) {
+      width = window.innerWidth;
+      scaleRatio = width / clientWidth;
+      height = clientHeight * scaleRatio;
+    }
 
-      if (this.state.isModalMoving) {
-        expand();
-      } else {
+    return {
+      width,
+      height,
+    };
+  }
+
+  get animations() {
+    return {
+      shrink: () => {
+        if (!this.prevPhoto) return;
+        const $photo = document.querySelector(`.photo[data-id="${this.prevPhoto._id}"]`);
+        const { offsetTop, offsetLeft, clientHeight } = $photo;
+        const $photoModalImg = this.$target.querySelector('.photo-modal__img');
+        document.body.style = '';
+        this.$target.classList.remove('visible');
+        this.$target.classList.add('hidden');
+        this.$target.style.zIndex = '';
+        $photoModalImg.style.top = `${offsetTop - window.scrollY}px`;
+        $photoModalImg.style.left = `${offsetLeft}px`;
+        $photoModalImg.style.height = `${clientHeight}px`;
+        $photoModalImg.style.width = 'auto';
+        toggleMainTabIndex();
+      },
+      expand: () => {
+        const { currentPhoto } = this.state;
+        if (!currentPhoto) return;
+        if (window.innerHeight < document.body.clientHeight) {
+          document.body.style.paddingRight = `${getScrollbarWidth()}px`;
+        }
+        document.body.style.overflow = 'hidden';
+        this.$target.classList.remove('hidden');
+        this.$target.classList.add('visible');
+        this.$target.style = '';
+        this.$target.style.top = `${window.scrollY}px`;
+        this.$target.style.zIndex = 100;
+
+        const $photo = document.querySelector(`.photo[data-id="${currentPhoto._id}"]`);
+        const { src } = $photo.querySelector('.photo__img');
+        const $photoModalImg = this.$target.querySelector('.photo-modal__img');
+        $photoModalImg.src = src;
+        $photoModalImg.style = '';
+
         const { offsetTop, offsetLeft, clientWidth, clientHeight } = $photo;
         $photoModalImg.style.top = `${offsetTop - window.scrollY}px`;
         $photoModalImg.style.left = `${offsetLeft}px`;
         $photoModalImg.style.height = `${clientHeight}px`;
         $photoModalImg.style.width = `${clientWidth}px`;
+
         setTimeout(() => {
-          expand();
+          $photoModalImg.src = `${src}?h=${this.maxSize.height}`;
+          $photoModalImg.style.transition = 'all var(--transition-duration) var(--transition-timing-function)';
+          $photoModalImg.style.top = `${(window.innerHeight - this.maxSize.height) / 2}px`;
+          $photoModalImg.style.left = `${(window.innerWidth - this.maxSize.width) / 2}px`;
+          $photoModalImg.style.height = `${this.maxSize.height}px`;
+          $photoModalImg.style.width = `${this.maxSize.width}px`;
         }, 0);
-      }
-    }
+      },
+      move: () => {
+        const { currentPhoto } = this.state;
+        if (!currentPhoto) return;
+        const $photo = document.querySelector(`.photo[data-id="${currentPhoto._id}"]`);
+        const { src } = $photo.querySelector('.photo__img');
+        const $photoModalImg = this.$target.querySelector('.photo-modal__img');
+        $photoModalImg.src = src;
+        $photoModalImg.style = '';
+        $photoModalImg.style.top = `${(window.innerHeight - this.maxSize.height) / 2}px`;
+        $photoModalImg.style.height = `${this.maxSize.height}px`;
+        $photoModalImg.style.width = `${this.maxSize.width}px`;
+        $photoModalImg.style.opacity = 0.7;
+
+        const targetLeft = (window.innerWidth - this.maxSize.width) / 2;
+        if (this.prevPhoto.index > currentPhoto.index) $photoModalImg.style.left = `${targetLeft - 50}px`;
+        else $photoModalImg.style.left = `${targetLeft + 50}px`;
+
+        setTimeout(() => {
+          $photoModalImg.src = `${src}?h=${this.maxSize.height}`;
+          $photoModalImg.style.transition = 'all var(--transition-duration) var(--transition-timing-function)';
+          $photoModalImg.style.left = `${targetLeft}px`;
+          $photoModalImg.style.opacity = 1;
+        }, 0);
+      },
+    };
+  }
+
+  playAnimation() {
+    const { currentPhoto } = this.state;
+    if (!currentPhoto) this.animations.shrink();
+    else if (this.state.isModalMoving) this.animations.move();
+    else this.animations.expand();
 
     const $photoInfoDetail = this.$target.querySelector('.photo-info__detail');
     $photoInfoDetail.classList.remove('visible');
     const $photoDeleteConfirm = this.$target.querySelector('.photo-delete-confirm');
     $photoDeleteConfirm.classList.remove('visible');
+    this.prevPhoto = { ...currentPhoto };
   }
 }
