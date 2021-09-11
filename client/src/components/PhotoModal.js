@@ -88,6 +88,14 @@ export default class PhotoModal {
     };
   }
 
+  maximizeImg() {
+    const $photoModalImg = this.$target.querySelector('.photo-modal__img');
+    $photoModalImg.style.top = `${(window.innerHeight - this.maxSize.height) / 2}px`;
+    $photoModalImg.style.left = `${(window.innerWidth - this.maxSize.width) / 2}px`;
+    $photoModalImg.style.height = `${this.maxSize.height}px`;
+    $photoModalImg.style.width = `${this.maxSize.width}px`;
+  }
+
   init($app) {
     this.$target.className = 'photo-modal';
     this.$target.classList.add('hidden');
@@ -103,6 +111,10 @@ export default class PhotoModal {
       else if (event.target.closest('.photo-delete-confirm__delete-btn')) await this.clickEvents.confirmDelete();
       else if (event.target.closest('.photo-modal__download-btn')) await this.clickEvents.download();
       else if (event.target.closest('.photo-info__btn')) this.clickEvents.info();
+    });
+
+    window.addEventListener('resize', () => {
+      this.maximizeImg();
     });
   }
 
@@ -225,10 +237,7 @@ export default class PhotoModal {
         setTimeout(() => {
           $photoModalImg.src = `${src}?h=${this.maxSize.height}`;
           $photoModalImg.style.transition = 'all var(--transition-duration) var(--transition-timing-function)';
-          $photoModalImg.style.top = `${(window.innerHeight - this.maxSize.height) / 2}px`;
-          $photoModalImg.style.left = `${(window.innerWidth - this.maxSize.width) / 2}px`;
-          $photoModalImg.style.height = `${this.maxSize.height}px`;
-          $photoModalImg.style.width = `${this.maxSize.width}px`;
+          this.maximizeImg();
         }, 0);
       },
       move: () => {

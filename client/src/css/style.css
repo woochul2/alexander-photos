@@ -65,8 +65,10 @@ img {
   border-radius: 0.25rem;
 }
 
-.upload-btn:hover {
-  background-color: hsl(0, 0%, 95%);
+@media (hover: hover) and (pointer: fine) {
+  .upload-btn:hover {
+    background-color: hsl(0, 0%, 95%);
+  }
 }
 
 .loading {
@@ -92,14 +94,40 @@ img {
   padding: 1.5rem 1rem;
 }
 
+@media (max-width: 68.75rem) {
+  .photos {
+    padding: 1.25rem 0.75rem;
+  }
+}
+
+@media (max-width: 37.5rem) {
+  .photos {
+    padding: 1rem 0.5rem;
+  }
+}
+
 .photo {
   cursor: pointer;
-  width: auto;
-  max-height: 15.625rem;
   margin: 0.125rem;
   padding: 0;
   background: 0;
   border: 0;
+}
+
+.photo__img {
+  max-height: 15.625rem;
+}
+
+@media (max-width: 68.75rem) {
+  .photo__img {
+    max-height: 12.5rem;
+  }
+}
+
+@media (max-width: 37.5rem) {
+  .photo__img {
+    max-height: 8.125rem;
+  }
 }
 
 .photo:focus-visible {
@@ -155,8 +183,10 @@ img {
   padding: 0.75rem;
 }
 
-.photo-modal .photo-modal__top .btn:hover {
-  background: hsl(0, 0%, 10%);
+@media (hover: hover) and (pointer: fine) {
+  .photo-modal .photo-modal__top .btn:hover {
+    background: hsl(0, 0%, 10%);
+  }
 }
 
 .photo-modal.visible button {
@@ -170,7 +200,7 @@ img {
 }
 
 .photo-modal__close-btn {
-  transition: transform var(--transition-duration) var(--transition-timing-function);
+  transition: all var(--transition-duration) var(--transition-timing-function);
 }
 
 .photo-modal.hidden .photo-modal__close-btn {
@@ -196,6 +226,17 @@ img {
   background-color: hsla(0, 0%, 100%, 0.8);
   border-radius: 0.25rem;
   box-shadow: 0 0.15rem 1rem hsla(0, 0%, 0%, 0.25);
+}
+
+@media (max-width: 37.5rem) {
+  .photo-info__detail {
+    top: 100%;
+    width: 16.25rem;
+    padding: 0.75rem 1rem;
+    font-size: 0.875rem;
+    list-style: none;
+    transform: translateX(50%);
+  }
 }
 
 .photo-info__detail.visible {
@@ -255,6 +296,7 @@ img {
 .photo-delete-confirm__delete-btn {
   color: hsl(0, 100%, 50%);
 }
+
 .photo-delete-confirm__delete-btn:hover {
   background: hsl(0, 100%, 95%);
 }
@@ -270,14 +312,18 @@ img {
   padding: 3rem;
 }
 
-.photo-modal__move:hover .photo-modal__arrow-btn,
-.photo-modal__arrow-btn:focus-visible {
-  background-color: hsl(0, 0%, 15%);
+@media (hover: hover) and (pointer: fine) {
+  .photo-modal__move:hover .photo-modal__arrow-btn,
+  .photo-modal__arrow-btn:focus-visible {
+    background-color: hsl(0, 0%, 15%);
+  }
 }
 
-.photo-modal__move:hover .photo-modal__arrow-btn img,
-.photo-modal__arrow-btn:focus-visible img {
-  visibility: visible;
+@media (hover: hover) and (pointer: fine) {
+  .photo-modal__move:hover .photo-modal__arrow-btn img,
+  .photo-modal__arrow-btn:focus-visible img {
+    visibility: visible;
+  }
 }
 
 .photo-modal__move.left {

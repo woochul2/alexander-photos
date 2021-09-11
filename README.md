@@ -8,7 +8,7 @@
 
 데모 링크에서 이미지 업로드와 삭제를 자유롭게 해볼 수 있습니다. (업로드 가능한 이미지: 6MB 이하의 `jpg` 또는 `png` 파일)
 
-데모 링크: [https://woochul2.github.io/alexander-photos/](https://woochul2.github.io/alexander-photos/)
+[데모 링크](https://woochul2.github.io/alexander-photos/) (데모 링크는 모바일에서도 접속할 수 있습니다.)
 
 ## 프론트엔드 기술 스택
 
@@ -49,7 +49,7 @@ API 엔드포인트: [https://4gpk31lzj8.execute-api.ap-northeast-2.amazonaws.co
             "orientation": 6,
             "pixelXDimension": 4032,
             "pixelYDimension": 1960
-        },
+        }
     ]
 }
 ```
