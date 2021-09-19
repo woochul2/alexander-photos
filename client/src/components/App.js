@@ -86,8 +86,8 @@ export default class App {
         }
 
         const $photo = document.querySelector(`.photo[data-id="${currentPhoto._id}"]`);
-        $photo.focus();
         this.onCloseModal();
+        $photo.focus();
       } else if (event.key === 'ArrowLeft') {
         this.onModalArrowLeft(currentPhoto.index);
       } else if (event.key === 'ArrowRight') {

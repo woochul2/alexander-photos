@@ -75,7 +75,8 @@ img {
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin: 1.5rem 0;
+  word-break: keep-all;
+  margin: 1.5rem;
 }
 
 .loading.hidden {
@@ -116,6 +117,7 @@ img {
 
 .photo__img {
   max-height: 15.625rem;
+  max-width: 100%;
 }
 
 @media (max-width: 68.75rem) {
@@ -157,6 +159,7 @@ img {
 
 .photo-modal__img {
   position: absolute;
+  max-width: 100%;
 }
 
 .photo-modal__top {
@@ -200,7 +203,9 @@ img {
 }
 
 .photo-modal__close-btn {
-  transition: all var(--transition-duration) var(--transition-timing-function);
+  transition-property: visibility, opacity, transform;
+  transition-duration: var(--transition-duration);
+  transition-timing-function: var(--transition-timing-function);
 }
 
 .photo-modal.hidden .photo-modal__close-btn {
