@@ -18,6 +18,10 @@ img {
   display: block;
 }
 
+button {
+  color: inherit;
+}
+
 .header {
   position: sticky;
   top: 0;
@@ -137,7 +141,7 @@ img {
 }
 
 .photo-modal {
-  position: absolute;
+  position: fixed;
   top: 0;
   left: 0;
   width: 100%;

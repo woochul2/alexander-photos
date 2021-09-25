@@ -38,7 +38,7 @@ export default class PhotoModal {
         await deleteImage(this.state.currentPhoto.filePath);
         await this.onDelete();
         const $photoModalImg = this.$target.querySelector('.photo-modal__img');
-        $photoModalImg.src = '';
+        $photoModalImg.style.display = 'none';
       },
       download: async () => {
         const { filePath } = this.state.currentPhoto;
@@ -145,7 +145,6 @@ export default class PhotoModal {
     });
 
     window.addEventListener('resize', () => {
-      this.$target.style.top = `${window.scrollY}px`;
       const $photoModalImg = this.$target.querySelector('.photo-modal__img');
       const tmp = $photoModalImg.style.transition;
       $photoModalImg.style.transition = '';
@@ -237,7 +236,6 @@ export default class PhotoModal {
         document.body.style.overflow = 'hidden';
         this.$target.classList.remove('hidden');
         this.$target.classList.add('visible');
-        this.$target.style.top = `${window.scrollY}px`;
         this.$target.style.zIndex = 100;
 
         const $photo = document.querySelector(`.photo[data-id="${currentPhoto._id}"]`);
