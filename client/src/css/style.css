@@ -9,7 +9,6 @@
 }
 
 body {
-  min-height: 100vh;
   font-family: 'Noto Sans KR';
   color: hsl(0, 0%, 15%);
 }
@@ -22,6 +21,11 @@ button {
   color: inherit;
 }
 
+#app {
+  height: 100vh;
+  overflow-x: hidden;
+}
+
 .header {
   position: sticky;
   top: 0;
@@ -32,6 +36,12 @@ button {
   padding: 0.5rem 2.5rem 0.5rem 1.5rem;
   background-color: hsl(0, 0%, 100%);
   border-bottom: 0.065rem solid hsl(0, 0%, 87%);
+}
+
+@media (max-width: 37.5rem) {
+  .header {
+    padding: 0.5rem 1rem 0.5rem 1.5rem;
+  }
 }
 
 .header__title {
@@ -48,6 +58,12 @@ button {
   align-items: center;
   gap: 1.5rem;
   font-size: 1.5rem;
+}
+
+@media (max-width: 37.5rem) {
+  .header__right {
+    gap: 1rem;
+  }
 }
 
 .github-icon {

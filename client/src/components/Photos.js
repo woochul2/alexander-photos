@@ -5,6 +5,7 @@ import { throttle } from '../utils/throttle.js';
 
 export default class Photos {
   constructor({ $app, initialState, onClick }) {
+    this.$app = $app;
     this.state = initialState;
     this.$target = document.createElement('div');
     this.onClick = onClick;
@@ -79,19 +80,19 @@ export default class Photos {
 
       const lazyLoad = throttle(() => {
         const rect = $photo.getBoundingClientRect();
-        if (rect.top < window.innerHeight) {
+        if (rect.top < this.$app.clientHeight + 300) {
           $photo.src = $photo.dataset.src;
           $photo.addEventListener('load', () => {
             $photo.removeAttribute('style');
           });
           window.removeEventListener('resize', changeStyle);
-          window.removeEventListener('scroll', lazyLoad);
+          this.$app.removeEventListener('scroll', lazyLoad);
           window.removeEventListener('resize', lazyLoad);
         }
       }, 20);
 
       window.addEventListener('resize', changeStyle);
-      window.addEventListener('scroll', lazyLoad);
+      this.$app.addEventListener('scroll', lazyLoad);
       window.addEventListener('resize', lazyLoad);
       lazyLoad();
     });

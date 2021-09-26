@@ -108,14 +108,21 @@ export default class PhotoModal {
     return result;
   }
 
+  get src() {
+    const $photo = document.querySelector(`.photo[data-id="${this.state.currentPhoto._id}"]`);
+    const $photoImg = $photo.querySelector('.photo__img');
+    const { src } = $photoImg;
+    if (src.includes('/src/assets/placeholder.png')) return $photoImg.dataset.src;
+    return src;
+  }
+
   maximizeImg() {
     const { currentPhoto } = this.state;
     if (!currentPhoto) return;
     const $photo = document.querySelector(`.photo[data-id="${currentPhoto._id}"]`);
     const { top, left, height, width } = $photo.getBoundingClientRect();
     const $photoModalImg = this.$target.querySelector('.photo-modal__img');
-    const { src } = $photo.querySelector('.photo__img');
-    $photoModalImg.src = `${src}?h=${this.maxSize.height}`;
+    $photoModalImg.src = `${this.src}?h=${this.maxSize.height}`;
     $photoModalImg.style.top = `${top}px`;
     $photoModalImg.style.left = `${left}px`;
     $photoModalImg.style.height = `${height}px`;
@@ -238,10 +245,8 @@ export default class PhotoModal {
         this.$target.classList.add('visible');
         this.$target.style.zIndex = 100;
 
-        const $photo = document.querySelector(`.photo[data-id="${currentPhoto._id}"]`);
-        const { src } = $photo.querySelector('.photo__img');
         const $photoModalImg = this.$target.querySelector('.photo-modal__img');
-        $photoModalImg.src = src;
+        $photoModalImg.src = this.src;
         $photoModalImg.removeAttribute('style');
         $photoModalImg.style.transition = `transform var(--transition-duration) var(--transition-timing-function)`;
         this.maximizeImg();
@@ -249,11 +254,9 @@ export default class PhotoModal {
       move: () => {
         const { currentPhoto } = this.state;
         if (!currentPhoto) return;
-        const $photo = document.querySelector(`.photo[data-id="${currentPhoto._id}"]`);
-        const { src } = $photo.querySelector('.photo__img');
         const $photoModalImg = this.$target.querySelector('.photo-modal__img');
 
-        $photoModalImg.src = src;
+        $photoModalImg.src = this.src;
         $photoModalImg.removeAttribute('style');
         $photoModalImg.style.opacity = 0.7;
         this.maximizeImg();
