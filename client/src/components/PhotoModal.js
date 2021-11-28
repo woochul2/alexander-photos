@@ -59,11 +59,11 @@ export default class PhotoModal {
           this.state.currentPhoto;
 
         const getDateTime = () => {
-          const matchResult = dateTime.match(
-            /(?<year>\w+):(?<month>\w+):(?<date>\w+) (?<hours>\w+):(?<seconds>\w+):(\w+)/
-          );
-          const { year, month, date, hours, seconds } = matchResult.groups;
-          return `${year}년 ${parseInt(month)}월 ${parseInt(date)}일 ${hours}:${seconds}`;
+          const date = new Date(dateTime);
+          const dateString = `${date.getFullYear()}년 ${date.getMonth() + 1}월 ${date.getDate()}일`;
+          const addPad = (num) => num.toString().padStart(2, '0');
+          const timeString = `${addPad(date.getHours())}:${addPad(date.getMinutes())}`;
+          return `${dateString} ${timeString}`;
         };
 
         const getPixel = () => {

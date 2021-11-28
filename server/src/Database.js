@@ -60,6 +60,16 @@ module.exports = (function () {
         throw new Error(err);
       }
     }
+
+    async updateOne(collectionName, filter, updateDoc) {
+      try {
+        const database = this.client.db('mongo');
+        const collection = database.collection(collectionName);
+        await collection.updateOne(filter, updateDoc);
+      } catch (err) {
+        throw new Error(err);
+      }
+    }
   }
 
   return new Database();

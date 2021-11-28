@@ -5,7 +5,6 @@ const multer = require('multer');
 const sharp = require('sharp');
 const { IMG_BUCKET } = require('../constants');
 const Database = require('../Database');
-const { getDateTime } = require('../utils/getDateTime');
 
 const router = express.Router();
 
@@ -40,7 +39,7 @@ router.post('/', upload.single('photo'), async (req, res) => {
   };
 
   const exifData = { ...JSON.parse(req.body.exifData || null) };
-  if (!exifData.dateTime) exifData.dateTime = getDateTime();
+  if (!exifData.dateTime) exifData.dateTime = new Date().getTime();
   if (!exifData.orientation) exifData.orientation = 1;
   if (!exifData.pixelXDimension || !exifData.pixelYDimension) {
     const { width, height } = await sharp(req.file.path).metadata();

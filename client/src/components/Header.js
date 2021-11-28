@@ -1,5 +1,4 @@
 import { postImage } from '../api.js';
-import { getDateTime } from '../utils/getDateTime.js';
 import { getExifData } from '../utils/getExifData.js';
 
 export default class Header {
@@ -31,12 +30,7 @@ export default class Header {
         const file = files[key];
         formData.append('photo', file);
         const exifData = await getExifData(file);
-        if (Object.keys(exifData).filter((key) => exifData[key]).length) {
-          formData.append('exifData', JSON.stringify(exifData));
-        } else {
-          const dateTime = getDateTime(file.lastModifiedDate);
-          formData.append('exifData', JSON.stringify({ dateTime }));
-        }
+        formData.append('exifData', JSON.stringify(exifData));
         await postImage(formData);
         await this.onUpload();
       };
