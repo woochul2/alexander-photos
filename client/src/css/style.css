@@ -22,11 +22,13 @@ button {
 }
 
 #app {
+  position: relative;
   height: 100vh;
   overflow-x: hidden;
 }
 
 .header {
+  z-index: 1;
   position: sticky;
   top: 0;
   display: flex;
@@ -112,48 +114,24 @@ button {
 }
 
 .photos {
-  padding: 1.5rem 1rem;
-}
-
-@media (max-width: 68.75rem) {
-  .photos {
-    padding: 1.25rem 0.75rem;
-  }
-}
-
-@media (max-width: 37.5rem) {
-  .photos {
-    padding: 1rem 0.5rem;
-  }
+  position: relative;
 }
 
 .photo {
   cursor: pointer;
-  margin: 0.125rem;
+  position: absolute;
   padding: 0;
   background: 0;
   border: 0;
 }
 
-.photo__img {
-  max-height: 15.625rem;
-  max-width: 100%;
-}
-
-@media (max-width: 68.75rem) {
-  .photo__img {
-    max-height: 12.5rem;
-  }
-}
-
-@media (max-width: 37.5rem) {
-  .photo__img {
-    max-height: 8.125rem;
-  }
-}
-
 .photo:focus-visible {
   outline: 0.25rem solid hsl(0, 100%, 74%);
+}
+
+.photo__img {
+  width: 100%;
+  height: 100%;
 }
 
 .photo-modal {

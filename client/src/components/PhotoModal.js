@@ -1,5 +1,4 @@
 import { API_ENDPOINT, deleteImage } from '../api.js';
-import { getScrollbarWidth } from '../utils/getScrollbarWidth.js';
 import { toggleClass } from '../utils/toggleClass.js';
 import { toggleMainTabIndex } from '../utils/toggleMainTabIndex.js';
 
@@ -122,7 +121,7 @@ export default class PhotoModal {
     const $photo = document.querySelector(`.photo[data-id="${currentPhoto._id}"]`);
     const { top, left, height, width } = $photo.getBoundingClientRect();
     const $photoModalImg = this.$target.querySelector('.photo-modal__img');
-    $photoModalImg.src = `${this.src}?h=${this.maxSize.height}`;
+    $photoModalImg.src = `${this.src.split('?')[0]}?h=${this.maxSize.height}`;
     $photoModalImg.style.top = `${top}px`;
     $photoModalImg.style.left = `${left}px`;
     $photoModalImg.style.height = `${height}px`;
@@ -218,7 +217,6 @@ export default class PhotoModal {
         const $photoModalImg = this.$target.querySelector('.photo-modal__img');
         this.$target.classList.remove('visible');
         this.$target.classList.add('hidden');
-        this.$target.style.zIndex = '';
 
         const $photo = document.querySelector(`.photo[data-id="${this.prevPhoto._id}"]`);
         const { top, left, height, width } = $photo.getBoundingClientRect();
@@ -237,9 +235,6 @@ export default class PhotoModal {
       expand: () => {
         const { currentPhoto } = this.state;
         if (!currentPhoto) return;
-        if (window.innerHeight < document.body.clientHeight) {
-          document.body.style.paddingRight = `${getScrollbarWidth()}px`;
-        }
         document.body.style.overflow = 'hidden';
         this.$target.classList.remove('hidden');
         this.$target.classList.add('visible');

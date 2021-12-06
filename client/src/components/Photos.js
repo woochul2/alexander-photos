@@ -1,7 +1,8 @@
 import { API_ENDPOINT } from '../api.js';
-import { changePxToRem } from '../utils/changePxToRem.js';
 import { changeRemToPx } from '../utils/changeRemToPx.js';
+import { getScrollbarWidth } from '../utils/getScrollbarWidth.js';
 import { throttle } from '../utils/throttle.js';
+const justifiedLayout = require('justified-layout');
 
 export default class Photos {
   constructor({ $app, initialState, onClick }) {
@@ -24,6 +25,10 @@ export default class Photos {
       const photo = this.state.photos.find((photo) => photo._id === $photo.dataset.id);
       this.onClick(photo);
     });
+
+    window.addEventListener('resize', () => {
+      this.render();
+    });
   }
 
   setState(nextState) {
@@ -31,39 +36,70 @@ export default class Photos {
     this.render();
   }
 
-  get maxHeight() {
-    if (window.innerWidth < changeRemToPx(37.5)) return 8.125;
-    if (window.innerWidth < changeRemToPx(68.75)) return 12.5;
-    return 15.625;
-  }
+  get geometry() {
+    const sizes = this.state.photos.map((photo) => {
+      if (photo.orientation >= 5 && photo.orientation <= 8) {
+        return {
+          width: photo.pixelYDimension,
+          height: photo.pixelXDimension,
+        };
+      }
 
-  getPlaceHolderStyle(photo) {
-    const { pixelXDimension, pixelYDimension, orientation } = photo;
-    const getOriginalSize = () => {
-      const pxd = changePxToRem(pixelXDimension);
-      const pyd = changePxToRem(pixelYDimension);
-      if (orientation >= 5 && orientation <= 8) return { x: pyd, y: pxd };
-      return { x: pxd, y: pyd };
+      return {
+        width: photo.pixelXDimension,
+        height: photo.pixelYDimension,
+      };
+    });
+
+    const getTargetRowHeight = () => {
+      if (window.innerWidth < changeRemToPx(68.75)) return changeRemToPx(12.5);
+      return changeRemToPx(15.625);
     };
-    const { x, y } = getOriginalSize();
-    const height = Math.min(this.maxHeight, y);
-    const width = x / (y / height);
-    return `height: ${height}rem; width: ${width}rem;`;
+
+    const getContainerPadding = () => {
+      if (window.innerWidth < changeRemToPx(37.5)) {
+        return {
+          top: changeRemToPx(0.375),
+          right: 0,
+          bottom: changeRemToPx(0.375),
+          left: 0,
+        };
+      }
+      if (window.innerWidth < changeRemToPx(68.75)) return changeRemToPx(0.375);
+      return changeRemToPx(0.625);
+    };
+
+    const config = {
+      containerWidth: window.innerWidth - getScrollbarWidth(),
+      targetRowHeight: getTargetRowHeight(),
+      boxSpacing: changeRemToPx(0.25),
+      containerPadding: getContainerPadding(),
+    };
+
+    return justifiedLayout(sizes, config);
   }
 
   render() {
+    this.$target.style.height = `${this.geometry.containerHeight}px`;
+
     this.$target.innerHTML = this.state.photos
       .map((photo, index) => {
         const { _id, filePath } = photo;
-        const imagePath = encodeURI(`${API_ENDPOINT}/image/${filePath}`);
+        const { width, height, top, left } = this.geometry.boxes[index];
+        const imagePath = encodeURI(`${API_ENDPOINT}/image/${filePath}?h=${height}`);
 
         return `
-          <button class="photo" data-id="${_id}" aria-label="사진 열기" onclick="this.blur();">
-            <img 
+          <button 
+            class="photo" 
+            data-id="${_id}" 
+            aria-label="사진 열기" 
+            onclick="this.blur();"
+            style="height: ${height}px; width: ${width}px; top: ${top}px; left: ${left}px;"
+          >
+            <img
               data-src=${imagePath}
               src="./src/assets/placeholder.png"
               class="photo__img"
-              style="${this.getPlaceHolderStyle(photo)}"
               data-index="${index}"
             >
           </button>
@@ -71,27 +107,17 @@ export default class Photos {
       })
       .join('');
 
-    const $photos = this.$target.querySelectorAll('.photo__img');
-    $photos.forEach(($photo) => {
-      const changeStyle = () => {
-        const { index } = $photo.dataset;
-        $photo.style = this.getPlaceHolderStyle(this.state.photos[index]);
-      };
-
+    const $photoImgs = this.$target.querySelectorAll('.photo__img');
+    $photoImgs.forEach(($photo) => {
       const lazyLoad = throttle(() => {
         const rect = $photo.getBoundingClientRect();
         if (rect.top < this.$app.clientHeight + 300) {
           $photo.src = $photo.dataset.src;
-          $photo.addEventListener('load', () => {
-            $photo.removeAttribute('style');
-          });
-          window.removeEventListener('resize', changeStyle);
           this.$app.removeEventListener('scroll', lazyLoad);
           window.removeEventListener('resize', lazyLoad);
         }
       }, 20);
 
-      window.addEventListener('resize', changeStyle);
       this.$app.addEventListener('scroll', lazyLoad);
       window.addEventListener('resize', lazyLoad);
       lazyLoad();
