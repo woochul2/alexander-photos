@@ -40,6 +40,7 @@ export default class Loading {
         if (this.state.isLoading) this.$target.classList.remove('hidden');
       }, 500);
     } else {
+      this.$target.classList.add('hidden');
       this.$target.innerHTML = '';
     }
   }

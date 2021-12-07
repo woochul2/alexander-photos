@@ -26,18 +26,6 @@ const s3 = new aws.S3();
 const upload = multer({ storage, fileFilter });
 
 router.post('/', upload.single('photo'), async (req, res) => {
-  const uploadToS3 = async () => {
-    const file = await fs.readFile(req.file.path);
-    await s3
-      .upload({
-        Bucket: IMG_BUCKET,
-        Key: req.file.originalname,
-        Body: file,
-        ContentType: req.file.mimetype,
-      })
-      .promise();
-  };
-
   const exifData = { ...JSON.parse(req.body.exifData || null) };
   if (!exifData.dateTime) exifData.dateTime = new Date().getTime();
   if (!exifData.orientation) exifData.orientation = 1;
@@ -46,15 +34,24 @@ router.post('/', upload.single('photo'), async (req, res) => {
     exifData.pixelXDimension = width;
     exifData.pixelYDimension = height;
   }
-  const photo = { filePath: req.file.originalname, ...exifData };
 
-  const insertToDatabase = async () => {
-    const image = await Database.findOne('images', photo);
-    if (!image) await Database.insertOne('images', photo);
-  };
+  const photo = { filePath: exifData.dateTime + '_' + req.file.originalname, ...exifData };
 
   try {
-    await Promise.all([uploadToS3(), insertToDatabase()]);
+    const image = await Database.findOne('images', photo);
+    if (image) throw new Error(`${req.file.originalname} already exists.`);
+
+    await Database.insertOne('images', photo);
+    const file = await fs.readFile(req.file.path);
+    await s3
+      .upload({
+        Bucket: IMG_BUCKET,
+        Key: photo.filePath,
+        Body: file,
+        ContentType: req.file.mimetype,
+      })
+      .promise();
+
     res.status(201).json({
       message: `Uploaded ${req.file.originalname} successfully`,
       result: photo,

@@ -14,6 +14,12 @@ export default class PhotoModal {
     this.init($app);
   }
 
+  get fileName() {
+    const { filePath } = this.state.currentPhoto;
+    const { fileName } = filePath.match(/(\d+_)(?<fileName>.*)/).groups;
+    return fileName;
+  }
+
   get clickEvents() {
     return {
       close: () => {
@@ -46,7 +52,7 @@ export default class PhotoModal {
         const imageBlob = await image.blob();
         const $tmp = document.createElement('a');
         $tmp.href = URL.createObjectURL(imageBlob);
-        $tmp.download = filePath;
+        $tmp.download = this.fileName;
         document.body.appendChild($tmp);
         $tmp.click();
         document.body.removeChild($tmp);
@@ -78,7 +84,7 @@ export default class PhotoModal {
         };
 
         $photoInfoDetail.innerHTML = `
-          <li><b>이름</b>: ${filePath}</li>
+          <li><b>이름</b>: ${this.fileName}</li>
           <li><b>생성 날짜</b>: ${getDateTime()}</li>
           <li><b>해상도</b>: ${getPixel()} 화소 (${getPixelDimension()})</li>
           ${make && model ? `<li><b>카메라 모델</b>: ${make} ${model}</li>` : ''}
