@@ -26,8 +26,15 @@ export default class Photos {
       this.onClick(photo);
     });
 
-    window.addEventListener('resize', () => {
+    const resizeEvent = () => {
       this.render();
+    };
+
+    window.addEventListener('resize', resizeEvent);
+    window.addEventListener('orientationchange', () => {
+      setTimeout(() => {
+        resizeEvent();
+      }, 1);
     });
   }
 
@@ -94,7 +101,7 @@ export default class Photos {
             data-id="${_id}" 
             aria-label="사진 열기" 
             onclick="this.blur();"
-            style="height: ${height}px; width: ${width}px; top: ${top}px; left: ${left}px;"
+            style="height: ${Math.floor(height)}px; width: ${width}px; top: ${top}px; left: ${left}px;"
           >
             <img
               data-src=${imagePath}
@@ -113,13 +120,25 @@ export default class Photos {
         const rect = $photo.getBoundingClientRect();
         if (rect.top < this.$app.clientHeight + 300) {
           $photo.src = $photo.dataset.src;
+          $photo.addEventListener('load', () => {
+            const $photoButton = $photo.closest('.photo');
+            $photoButton.style.width = '';
+          });
           this.$app.removeEventListener('scroll', lazyLoad);
           window.removeEventListener('resize', lazyLoad);
+          window.removeEventListener('orientationchange', orientationChangeEvent);
         }
       }, 20);
 
+      const orientationChangeEvent = () => {
+        setTimeout(() => {
+          lazyLoad;
+        }, 1);
+      };
+
       this.$app.addEventListener('scroll', lazyLoad);
       window.addEventListener('resize', lazyLoad);
+      window.addEventListener('orientationchange', orientationChangeEvent);
       lazyLoad();
     });
   }

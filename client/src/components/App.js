@@ -77,6 +77,19 @@ export default class App {
       console.error(err);
     }
 
+    const setAppHeight = () => {
+      this.$app.style.height = `${window.innerHeight}px`;
+    };
+
+    setAppHeight();
+
+    window.addEventListener('resize', setAppHeight);
+    window.addEventListener('orientationchange', () => {
+      setTimeout(() => {
+        setAppHeight();
+      }, 1);
+    });
+
     document.addEventListener('keydown', (event) => {
       const { currentPhoto } = this.state;
       if (!currentPhoto) return;

@@ -9,6 +9,7 @@
 }
 
 body {
+  overflow: hidden;
   font-family: 'Noto Sans KR';
   color: hsl(0, 0%, 15%);
 }

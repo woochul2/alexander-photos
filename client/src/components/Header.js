@@ -37,8 +37,14 @@ export default class Header {
       Object.keys(files).forEach(uploadFile);
     };
 
+    const titleClickEvent = (event) => {
+      if (!event.target.closest('.header__title')) return;
+      $app.scrollTop = 0;
+    };
+
     this.$target.addEventListener('click', uploadButtonClickEvent);
     this.$target.addEventListener('change', uploadButtonInputChangeEvent);
+    this.$target.addEventListener('click', titleClickEvent);
   }
 
   setState(nextState) {

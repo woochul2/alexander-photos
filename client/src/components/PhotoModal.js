@@ -60,8 +60,7 @@ export default class PhotoModal {
       info: () => {
         const $photoInfoDetail = this.$target.querySelector('.photo-info__detail');
         toggleClass($photoInfoDetail, 'visible');
-        const { dateTime, filePath, make, model, orientation, pixelXDimension, pixelYDimension } =
-          this.state.currentPhoto;
+        const { dateTime, make, model, orientation, pixelXDimension, pixelYDimension } = this.state.currentPhoto;
 
         const getDateTime = () => {
           const date = new Date(dateTime);
@@ -93,11 +92,18 @@ export default class PhotoModal {
     };
   }
 
-  get maxSize() {
-    const { currentPhoto } = this.state;
-    const $photo = document.querySelector(`.photo[data-id="${currentPhoto._id}"]`);
+  getSrc(photo) {
+    const $photo = document.querySelector(`.photo[data-id="${photo._id}"]`);
+    const $photoImg = $photo.querySelector('.photo__img');
+    const { src } = $photoImg;
+    if (src.includes('/src/assets/placeholder.png')) return $photoImg.dataset.src;
+    return src;
+  }
+
+  getMaxSize(photo) {
+    const $photo = document.querySelector(`.photo[data-id="${photo._id}"]`);
     const { width, height } = $photo.getBoundingClientRect();
-    const { pixelYDimension } = currentPhoto;
+    const { pixelYDimension } = photo;
 
     const result = { width: 0, height: 0 };
     result.height = Math.min(window.innerHeight, pixelYDimension);
@@ -113,30 +119,34 @@ export default class PhotoModal {
     return result;
   }
 
-  get src() {
-    const $photo = document.querySelector(`.photo[data-id="${this.state.currentPhoto._id}"]`);
-    const $photoImg = $photo.querySelector('.photo__img');
-    const { src } = $photoImg;
-    if (src.includes('/src/assets/placeholder.png')) return $photoImg.dataset.src;
-    return src;
+  minimizeImg(photo) {
+    const $photo = document.querySelector(`.photo[data-id="${photo._id}"]`);
+    const $photoModalImg = this.$target.querySelector('.photo-modal__img');
+    const { top, left, height, width } = $photo.getBoundingClientRect();
+
+    const src = this.getSrc(photo);
+    $photoModalImg.src = src;
+
+    const maxSize = this.getMaxSize(photo);
+    $photoModalImg.src = `${src.split('?')[0]}?h=${Math.ceil(maxSize.height)}`;
+    $photoModalImg.style.top = `${top - (maxSize.height - height) / 2}px`;
+    $photoModalImg.style.left = `${left - (maxSize.width - width) / 2}px`;
+    $photoModalImg.style.height = `${maxSize.height}px`;
+    $photoModalImg.style.transform = `scale(${height / maxSize.height})`;
   }
 
   maximizeImg() {
     const { currentPhoto } = this.state;
     if (!currentPhoto) return;
+
     const $photo = document.querySelector(`.photo[data-id="${currentPhoto._id}"]`);
-    const { top, left, height, width } = $photo.getBoundingClientRect();
     const $photoModalImg = this.$target.querySelector('.photo-modal__img');
-    $photoModalImg.src = `${this.src.split('?')[0]}?h=${this.maxSize.height}`;
-    $photoModalImg.style.top = `${top}px`;
-    $photoModalImg.style.left = `${left}px`;
-    $photoModalImg.style.height = `${height}px`;
-    $photoModalImg.style.width = `${width}px`;
+    const { top, left, height, width } = $photo.getBoundingClientRect();
+
     const translateX = (window.innerWidth - width) / 2 - left;
     const translateY = (window.innerHeight - height) / 2 - top;
-    const translate = `translate(${translateX}px, ${translateY}px)`;
-    const scale = `scale(${this.maxSize.height / height})`;
-    $photoModalImg.style.transform = `${translate} ${scale}`;
+    const translate = `translate(${Math.round(translateX)}px, ${Math.round(translateY)}px)`;
+    $photoModalImg.style.transform = `${translate} scale(1)`;
   }
 
   init($app) {
@@ -156,14 +166,22 @@ export default class PhotoModal {
       else if (event.target.closest('.photo-info__btn')) this.clickEvents.info();
     });
 
-    window.addEventListener('resize', () => {
+    const resizeEvent = () => {
       const $photoModalImg = this.$target.querySelector('.photo-modal__img');
       const tmp = $photoModalImg.style.transition;
       $photoModalImg.style.transition = '';
+      this.minimizeImg(this.state.currentPhoto);
       this.maximizeImg();
       setTimeout(() => {
         $photoModalImg.style.transition = tmp;
       }, 0);
+    };
+
+    window.addEventListener('resize', resizeEvent);
+    window.addEventListener('orientationchange', () => {
+      setTimeout(() => {
+        resizeEvent();
+      }, 1);
     });
   }
 
@@ -220,45 +238,39 @@ export default class PhotoModal {
     return {
       shrink: () => {
         if (!this.prevPhoto) return;
-        const $photoModalImg = this.$target.querySelector('.photo-modal__img');
         this.$target.classList.remove('visible');
         this.$target.classList.add('hidden');
 
-        const $photo = document.querySelector(`.photo[data-id="${this.prevPhoto._id}"]`);
-        const { top, left, height, width } = $photo.getBoundingClientRect();
-        $photoModalImg.style.top = `${top}px`;
-        $photoModalImg.style.left = `${left}px`;
-        $photoModalImg.style.height = `${height}px`;
-        $photoModalImg.style.width = `${width}px`;
-        $photoModalImg.style.transform = 'scale(1)';
-
+        this.minimizeImg(this.prevPhoto);
         toggleMainTabIndex();
+
         const transitionDuration = getComputedStyle(document.documentElement).getPropertyValue('--transition-duration');
         setTimeout(() => {
-          document.body.removeAttribute('style');
+          const $photoModalImg = this.$target.querySelector('.photo-modal__img');
+          $photoModalImg.removeAttribute('style');
         }, parseFloat(transitionDuration) * 1000);
       },
       expand: () => {
         const { currentPhoto } = this.state;
         if (!currentPhoto) return;
-        document.body.style.overflow = 'hidden';
         this.$target.classList.remove('hidden');
         this.$target.classList.add('visible');
         this.$target.style.zIndex = 100;
 
-        const $photoModalImg = this.$target.querySelector('.photo-modal__img');
-        $photoModalImg.src = this.src;
-        $photoModalImg.removeAttribute('style');
-        $photoModalImg.style.transition = `transform var(--transition-duration) var(--transition-timing-function)`;
-        this.maximizeImg();
+        this.minimizeImg(currentPhoto);
+        setTimeout(() => {
+          const $photoModalImg = this.$target.querySelector('.photo-modal__img');
+          $photoModalImg.style.transition = 'transform var(--transition-duration) var(--transition-timing-function)';
+          this.maximizeImg();
+        }, 0);
       },
       move: () => {
         const { currentPhoto } = this.state;
         if (!currentPhoto) return;
         const $photoModalImg = this.$target.querySelector('.photo-modal__img');
 
-        $photoModalImg.src = this.src;
         $photoModalImg.removeAttribute('style');
+        this.minimizeImg(currentPhoto);
         $photoModalImg.style.opacity = 0.7;
         this.maximizeImg();
 
@@ -292,6 +304,7 @@ export default class PhotoModal {
     $photoInfoDetail.classList.remove('visible');
     const $photoDeleteConfirm = this.$target.querySelector('.photo-delete-confirm');
     $photoDeleteConfirm.classList.remove('visible');
+
     this.prevPhoto = { ...currentPhoto };
   }
 }
