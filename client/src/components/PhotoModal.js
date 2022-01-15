@@ -1,4 +1,5 @@
 import { API_ENDPOINT, deleteImage } from '../api.js';
+import { getWindowHeight } from '../utils/getWindowHeight.js';
 import { toggleClass } from '../utils/toggleClass.js';
 import { toggleMainTabIndex } from '../utils/toggleMainTabIndex.js';
 
@@ -106,12 +107,12 @@ export default class PhotoModal {
     const { pixelYDimension } = photo;
 
     const result = { width: 0, height: 0 };
-    result.height = Math.min(window.innerHeight, pixelYDimension);
+    result.height = Math.min(getWindowHeight(), pixelYDimension);
     let scaleRatio = result.height / height;
     result.width = width * scaleRatio;
 
-    if (result.width > window.innerWidth) {
-      result.width = window.innerWidth;
+    if (result.width > document.body.clientWidth) {
+      result.width = document.body.clientWidth;
       scaleRatio = result.width / width;
       result.height = height * scaleRatio;
     }
@@ -120,6 +121,7 @@ export default class PhotoModal {
   }
 
   minimizeImg(photo) {
+    if (!photo) return;
     const $photo = document.querySelector(`.photo[data-id="${photo._id}"]`);
     const $photoModalImg = this.$target.querySelector('.photo-modal__img');
     const { top, left, height, width } = $photo.getBoundingClientRect();
@@ -143,8 +145,8 @@ export default class PhotoModal {
     const $photoModalImg = this.$target.querySelector('.photo-modal__img');
     const { top, left, height, width } = $photo.getBoundingClientRect();
 
-    const translateX = (window.innerWidth - width) / 2 - left;
-    const translateY = (window.innerHeight - height) / 2 - top;
+    const translateX = (document.body.clientWidth - width) / 2 - left;
+    const translateY = (getWindowHeight() - height) / 2 - top;
     const translate = `translate(${Math.round(translateX)}px, ${Math.round(translateY)}px)`;
     $photoModalImg.style.transform = `${translate} scale(1)`;
   }

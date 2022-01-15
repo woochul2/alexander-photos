@@ -59,12 +59,12 @@ export default class Photos {
     });
 
     const getTargetRowHeight = () => {
-      if (window.innerWidth < changeRemToPx(68.75)) return changeRemToPx(12.5);
+      if (document.body.clientWidth < changeRemToPx(68.75)) return changeRemToPx(12.5);
       return changeRemToPx(15.625);
     };
 
     const getContainerPadding = () => {
-      if (window.innerWidth < changeRemToPx(37.5)) {
+      if (document.body.clientWidth < changeRemToPx(37.5)) {
         return {
           top: changeRemToPx(0.375),
           right: 0,
@@ -72,12 +72,12 @@ export default class Photos {
           left: 0,
         };
       }
-      if (window.innerWidth < changeRemToPx(68.75)) return changeRemToPx(0.375);
+      if (document.body.clientWidth < changeRemToPx(68.75)) return changeRemToPx(0.375);
       return changeRemToPx(0.625);
     };
 
     const config = {
-      containerWidth: window.innerWidth - getScrollbarWidth(),
+      containerWidth: document.body.clientWidth - getScrollbarWidth(),
       targetRowHeight: getTargetRowHeight(),
       boxSpacing: changeRemToPx(0.25),
       containerPadding: getContainerPadding(),
@@ -132,7 +132,7 @@ export default class Photos {
 
       const orientationChangeEvent = () => {
         setTimeout(() => {
-          lazyLoad;
+          lazyLoad();
         }, 1);
       };
 

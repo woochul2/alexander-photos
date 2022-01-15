@@ -1,4 +1,5 @@
 import { getPhotos } from '../utils/getPhotos.js';
+import { getWindowHeight } from '../utils/getWindowHeight.js';
 import { toggleMainTabIndex } from '../utils/toggleMainTabIndex.js';
 import Header from './Header.js';
 import Loading from './Loading.js';
@@ -78,7 +79,7 @@ export default class App {
     }
 
     const setAppHeight = () => {
-      this.$app.style.height = `${window.innerHeight}px`;
+      this.$app.style.height = `${getWindowHeight()}px`;
     };
 
     setAppHeight();
