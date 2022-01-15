@@ -21,7 +21,7 @@ router.get('/:filePath', async (req, res) => {
       if (w && h) return { width: Math.min(parseInt(w), width), height: Math.min(parseInt(h), height), fit: 'fill' };
       else if (w && !h) return { width: Math.min(parseInt(w), width) };
       else if (!w && h) return { height: Math.min(parseInt(h), height) };
-      return { height: Math.min(height, 250) };
+      return {};
     };
 
     const resizeOption = await getResizeOption();

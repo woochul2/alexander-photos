@@ -130,7 +130,7 @@ export default class PhotoModal {
     $photoModalImg.src = src;
 
     const maxSize = this.getMaxSize(photo);
-    $photoModalImg.src = `${src.split('?')[0]}?h=${Math.ceil(maxSize.height)}`;
+    $photoModalImg.src = `${src.split('?')[0]}?h=${Math.ceil(maxSize.height * window.devicePixelRatio)}`;
     $photoModalImg.style.top = `${top - (maxSize.height - height) / 2}px`;
     $photoModalImg.style.left = `${left - (maxSize.width - width) / 2}px`;
     $photoModalImg.style.height = `${maxSize.height}px`;

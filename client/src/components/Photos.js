@@ -93,7 +93,7 @@ export default class Photos {
       .map((photo, index) => {
         const { _id, filePath } = photo;
         const { width, height, top, left } = this.geometry.boxes[index];
-        const imagePath = encodeURI(`${API_ENDPOINT}/image/${filePath}?h=${height}`);
+        const imagePath = encodeURI(`${API_ENDPOINT}/image/${filePath}?h=${height * window.devicePixelRatio}`);
 
         return `
           <button 
@@ -101,13 +101,14 @@ export default class Photos {
             data-id="${_id}" 
             aria-label="사진 열기" 
             onclick="this.blur();"
-            style="height: ${Math.floor(height)}px; width: ${width}px; top: ${top}px; left: ${left}px;"
+            style="top: ${top}px; left: ${left}px;"
           >
             <img
               data-src=${imagePath}
               src="./src/assets/placeholder.png"
               class="photo__img"
               data-index="${index}"
+              style="height: ${Math.floor(height)}px; width: ${width}px;"
             >
           </button>
         `;
@@ -121,8 +122,7 @@ export default class Photos {
         if (rect.top < this.$app.clientHeight + 300) {
           $photo.src = $photo.dataset.src;
           $photo.addEventListener('load', () => {
-            const $photoButton = $photo.closest('.photo');
-            $photoButton.style.width = '';
+            $photo.style.width = '';
           });
           this.$app.removeEventListener('scroll', lazyLoad);
           window.removeEventListener('resize', lazyLoad);
