@@ -236,6 +236,12 @@ export default class PhotoModal {
     `;
   }
 
+  removePhotoModalImgAttribute() {
+    const $photoModalImg = this.$target.querySelector('.photo-modal__img');
+    $photoModalImg.removeAttribute('style');
+    $photoModalImg.removeAttribute('src');
+  }
+
   get animations() {
     return {
       shrink: () => {
@@ -248,8 +254,7 @@ export default class PhotoModal {
 
         const transitionDuration = getComputedStyle(document.documentElement).getPropertyValue('--transition-duration');
         setTimeout(() => {
-          const $photoModalImg = this.$target.querySelector('.photo-modal__img');
-          $photoModalImg.removeAttribute('style');
+          this.removePhotoModalImgAttribute();
         }, parseFloat(transitionDuration) * 1000);
       },
       expand: () => {
@@ -271,7 +276,7 @@ export default class PhotoModal {
         if (!currentPhoto) return;
         const $photoModalImg = this.$target.querySelector('.photo-modal__img');
 
-        $photoModalImg.removeAttribute('style');
+        this.removePhotoModalImgAttribute();
         this.minimizeImg(currentPhoto);
         $photoModalImg.style.opacity = 0.7;
         this.maximizeImg();
