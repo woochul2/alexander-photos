@@ -1,4 +1,5 @@
 import { API_ENDPOINT, deleteImage } from '../api.js';
+import { changeRemToPx } from '../utils/changeRemToPx.js';
 import { getWindowHeight } from '../utils/getWindowHeight.js';
 import { toggleClass } from '../utils/toggleClass.js';
 import { toggleMainTabIndex } from '../utils/toggleMainTabIndex.js';
@@ -193,25 +194,27 @@ export default class PhotoModal {
   }
 
   render() {
+    const svgSize = changeRemToPx(1.5);
+
     this.$target.innerHTML = `
       <img class="photo-modal__img">
       <div class="photo-modal__top">
         <button class="btn photo-modal__close-btn" aria-label="사진 목록으로 돌아가기">
-          <img src="./src/icons/arrow-left.svg" alt="닫기 아이콘">
+          <img src="./src/icons/arrow-left.svg" width=${svgSize} height=${svgSize} alt="닫기 아이콘">
         </button>
         <div class="photo-modal__top-right">
           <div class="photo-info">
             <button class="btn photo-info__btn" aria-label="사진 정보 보기" title="정보">
-              <img src="./src/icons/info.svg" alt="정보 아이콘">
+              <img src="./src/icons/info.svg" width=${svgSize} height=${svgSize} alt="정보 아이콘">
             </button>
             <ul class="photo-info__detail"></ul>
           </div>
           <button class="btn photo-modal__download-btn" aria-label="사진 원본 다운로드" title="원본 다운로드">
-            <img src="./src/icons/download.svg" alt="다운로드 아이콘">
+            <img src="./src/icons/download.svg" width=${svgSize} height=${svgSize} alt="다운로드 아이콘">
           </button>
           <div class="photo-delete">
             <button class="btn photo-delete__btn" aria-label="사진 삭제하기" title="삭제">
-              <img src="./src/icons/trash.svg" alt="삭제 아이콘">
+              <img src="./src/icons/trash.svg" width=${svgSize} height=${svgSize} alt="삭제 아이콘">
             </button>
             <div class="photo-delete-confirm">
               <p class="photo-delete-confirm__description">삭제 후 이미지는 복구할 수 없습니다. 그래도 삭제하시겠습니까?</p>
@@ -225,12 +228,12 @@ export default class PhotoModal {
       </div>
       <div class="photo-modal__move left">
         <button class="btn photo-modal__arrow-btn" aria-label="이전 사진 보기">
-          <img src="./src/icons/chevron-left.svg" alt="왼쪽 화살표 아이콘">
+          <img src="./src/icons/chevron-left.svg" width=${svgSize} height=${svgSize} alt="왼쪽 화살표 아이콘">
         </button>
       </div>
       <div class="photo-modal__move right">
         <button class="btn photo-modal__arrow-btn right" aria-label="다음 사진 보기">
-          <img src="./src/icons/chevron-left.svg" alt="오른쪽 화살표 아이콘">
+          <img src="./src/icons/chevron-left.svg" width=${svgSize} height=${svgSize} alt="오른쪽 화살표 아이콘">
         </button>
       </div>
     `;

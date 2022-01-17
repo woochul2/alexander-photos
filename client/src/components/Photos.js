@@ -1,6 +1,9 @@
 import { API_ENDPOINT } from '../api.js';
+import { BREAKPOINTS, MAX_WIDTH } from '../constants.js';
+import { changePxToRem } from '../utils/changePxToRem.js';
 import { changeRemToPx } from '../utils/changeRemToPx.js';
 import { getScrollbarWidth } from '../utils/getScrollbarWidth.js';
+import { getWindowHeight } from '../utils/getWindowHeight.js';
 import { throttle } from '../utils/throttle.js';
 const justifiedLayout = require('justified-layout');
 
@@ -58,28 +61,46 @@ export default class Photos {
       };
     });
 
+    const bodyRemWidth = changePxToRem(document.body.clientWidth);
+    const containerWidth = document.body.clientWidth - getScrollbarWidth();
+
     const getTargetRowHeight = () => {
-      if (document.body.clientWidth < changeRemToPx(68.75)) return changeRemToPx(12.5);
-      return changeRemToPx(15.625);
+      const getResult = (remValue) => Math.min(getWindowHeight() / 2, changeRemToPx(remValue));
+
+      if (bodyRemWidth < BREAKPOINTS.SM) return getResult(20);
+      if (bodyRemWidth < BREAKPOINTS.LG) return getResult(23.125);
+      if (bodyRemWidth < BREAKPOINTS.XL) return getResult(25);
+      return getResult(28.125);
+    };
+
+    const getBoxSpacing = () => {
+      if (bodyRemWidth < BREAKPOINTS.LG) return changeRemToPx(0.25);
+      return changeRemToPx(0.5);
     };
 
     const getContainerPadding = () => {
-      if (document.body.clientWidth < changeRemToPx(37.5)) {
+      const getResult = (verticalRem, horizontalRem) => {
+        const vertical = changeRemToPx(verticalRem);
+        const horizontal = Math.max(changeRemToPx(horizontalRem), (containerWidth - changeRemToPx(MAX_WIDTH)) / 2);
+
         return {
-          top: changeRemToPx(0.375),
-          right: 0,
-          bottom: changeRemToPx(0.375),
-          left: 0,
+          top: vertical,
+          right: horizontal,
+          bottom: vertical,
+          left: horizontal,
         };
-      }
-      if (document.body.clientWidth < changeRemToPx(68.75)) return changeRemToPx(0.375);
-      return changeRemToPx(0.625);
+      };
+
+      if (bodyRemWidth < BREAKPOINTS.SM) return getResult(0.375, 0);
+      if (bodyRemWidth < BREAKPOINTS.LG) return getResult(0.75, 0.375);
+      if (bodyRemWidth < BREAKPOINTS.XL) return getResult(1.125, 0.5);
+      return getResult(1.5, 1);
     };
 
     const config = {
-      containerWidth: document.body.clientWidth - getScrollbarWidth(),
+      containerWidth,
       targetRowHeight: getTargetRowHeight(),
-      boxSpacing: changeRemToPx(0.25),
+      boxSpacing: getBoxSpacing(),
       containerPadding: getContainerPadding(),
     };
 

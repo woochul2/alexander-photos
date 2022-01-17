@@ -16,12 +16,12 @@ export default class App {
     this.onModalArrowLeft = (index) => {
       if (index === 0) return;
       this.setState({ currentPhoto: this.state.photos[index - 1], isModalMoving: true });
-      this.scrollY(index - 1);
+      this.moveScrollY(index - 1);
     };
     this.onModalArrowRight = (index) => {
       if (index === this.state.photos.length - 1) return;
       this.setState({ currentPhoto: this.state.photos[index + 1], isModalMoving: true });
-      this.scrollY(index + 1);
+      this.moveScrollY(index + 1);
     };
 
     this.header = new Header({
@@ -113,10 +113,10 @@ export default class App {
     });
   }
 
-  scrollY(index) {
+  moveScrollY(index) {
     const { _id } = this.state.photos[index];
     const $photo = document.querySelector(`.photo[data-id="${_id}"]`);
     const rect = $photo.getBoundingClientRect();
-    this.$app.scrollTop += rect.top - this.$app.clientHeight / 2;
+    this.$app.scrollTop += rect.top - (this.$app.clientHeight - rect.height) / 2;
   }
 }

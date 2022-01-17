@@ -1,4 +1,5 @@
 import { postImage } from '../api.js';
+import { changeRemToPx } from '../utils/changeRemToPx.js';
 import { getExifData } from '../utils/getExifData.js';
 
 export default class Header {
@@ -53,9 +54,11 @@ export default class Header {
   }
 
   render() {
+    const svgSize = changeRemToPx(1.5);
+
     const uploadButton = `
       <button class="upload-btn" aria-label="이미지 올리기">
-        <img src="./src/icons/upload.svg" class="upload-btn-icon" alt="업로드 아이콘"/>
+        <img src="./src/icons/upload.svg" class="upload-btn-icon" width=${svgSize} height=${svgSize} alt="업로드 아이콘" />
         업로드
       </button>
     `;
