@@ -2,7 +2,7 @@
 
 구글 포토 클론 프로젝트입니다.
 
-![screenshot](https://user-images.githubusercontent.com/49304239/132171918-336260bd-158e-47c5-b4d2-c0f2e6b43ad8.gif)
+![screenshot](https://user-images.githubusercontent.com/49304239/149685950-d93b57e6-9270-4b6f-9287-ff69f9ad0a2b.gif)
 
 알렉산더는 저희 집 고양이 이름이에요. 코리안 숏헤어이고, 2018년 11월에 태어나(추정), 2019년 11월에 가족이 되었답니다.
 
@@ -41,14 +41,14 @@ API 엔드포인트: [https://4gpk31lzj8.execute-api.ap-northeast-2.amazonaws.co
 {
     "results": [
         {
-            "_id": "6134e7111a7664ba09ddae8d",
-            "filePath": "20210510_180622.jpg",
-            "dateTime": "2021:05:10 18:06:22",
-            "make": "samsung",
-            "model": "SM-N950N",
+            "_id": "61add69e3ab555d262f719df",
+            "filePath": "1638610207000_IMG_0279.jpg",
+            "dateTime": 1638610207000,
+            "make": "Apple",
+            "model": "iPhone 12",
             "orientation": 6,
             "pixelXDimension": 4032,
-            "pixelYDimension": 1960
+            "pixelYDimension": 3024
         }
     ]
 }
@@ -83,14 +83,16 @@ API 엔드포인트: [https://4gpk31lzj8.execute-api.ap-northeast-2.amazonaws.co
 
 ```json
 {
-    "message": "Uploaded xps-2L-0vnCnzcU-unsplash.jpg successfully",
+    "message": "Uploaded IMG_0392.jpg successfully",
     "result": {
-        "_id": "6135aa295c638c0edaf31555",
-        "filePath": "xps-2L-0vnCnzcU-unsplash.jpg",
-        "dateTime": "2021:09:06 05:42:01",
-        "orientation": 1,
-        "pixelXDimension": 6016,
-        "pixelYDimension": 4016
+        "_id": "61e39a91dea31de8ba75c488",
+        "filePath": "1642142778000_IMG_0392.jpg",
+        "dateTime": 1642142778000,
+        "make": "Apple",
+        "model": "iPhone 12",
+        "orientation": 6,
+        "pixelXDimension": 4032,
+        "pixelYDimension": 3024
     }
 }
 ```
@@ -129,9 +131,7 @@ API 엔드포인트: [https://4gpk31lzj8.execute-api.ap-northeast-2.amazonaws.co
 
 최적화된 이미지를 가져옵니다.
 
-쿼리 파라미터가 존재하지 않을 때의 기본값은 높이가 250px, 너비가 자동인 이미지입니다.
-
-w, h를 쿼리 파라미터로 넘긴다면, 그에 맞는 너비와 높이를 가진 이미지를 가져올 수 있습니다.
+w, h를 쿼리 파라미터로 넘기면, 그에 맞는 너비와 높이를 가진 이미지를 가져올 수 있습니다.
 
 w 또는 h가 원본 이미지의 너비 또는 높이보다 크다면, 결과 이미지의 크기는 자동으로 원본 이미지의 너비 또는 높이가 됩니다.
 
