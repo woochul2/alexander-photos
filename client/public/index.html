@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>알렉산더 포토</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR&family=Single+Day&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/static/main.css" />
+    <script defer src="/static/main.js"></script>
+  </head>
+  <body>
+    <main class="main">
+      <header class="header">
+        <a class="header__title" href="#">알렉산더 포토</a>
+        <div class="header__right">
+          <a
+            href="https://github.com/woochul2/alexander-photos"
+            class="header__github"
+            aria-label="깃허브 저장소"
+            target="_blank"
+          >
+            <%= icons.github %>
+          </a>
+          <input
+            type="file"
+            class="upload-input"
+            aria-label="이미지 올리기"
+            multiple
+            hidden
+          />
+          <button class="upload-btn hidden" aria-label="이미지 올리기"></button>
+        </div>
+      </header>
+      <div class="loading"></div>
+      <div class="photos"></div>
+      <div class="photo-modal"></div>
+    </main>
+  </body>
+</html>

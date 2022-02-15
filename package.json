@@ -1,7 +1,0 @@
-{
-  "name": "alexander-photos",
-  "version": "1.0.0",
-  "scripts": {
-    "deploy:client": "git subtree push --prefix client origin gh-pages"
-  }
-}

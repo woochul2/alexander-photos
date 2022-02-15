@@ -1,37 +1,49 @@
-// export const API_ENDPOINT = 'http://127.0.0.1:3000';
-export const API_ENDPOINT = 'https://4gpk31lzj8.execute-api.ap-northeast-2.amazonaws.com/dev';
+import fetchData from './utils/fetchData';
 
-export async function getImages() {
-  try {
-    const response = await fetch(`${API_ENDPOINT}/api/images`);
-    if (!response.ok) throw new Error('fetch error');
-    return await response.json();
-  } catch (err) {
-    throw new Error(err.message);
+export default class API {
+  constructor() {
+    // prettier-ignore
+    // this.ENDPOINT = 'http://localhost:3000';
+    this.ENDPOINT = 'https://4gpk31lzj8.execute-api.ap-northeast-2.amazonaws.com/dev';
   }
-}
 
-export async function postImage(formData) {
-  try {
-    const response = await fetch(`${API_ENDPOINT}/api/image`, {
+  /**
+   * 서버에서 모든 사진의 정보를 가져온다.
+   *
+   * @returns {Promise<Image[]>}
+   */
+  async getImages() {
+    const url = `${this.ENDPOINT}/api/images`;
+    const data = await fetchData(url, { method: 'GET' });
+    return data.results;
+  }
+
+  /**
+   * 서버에 사진을 업로드한다.
+   *
+   * @param {FormData} formData
+   * @returns {Promise<{message:string, results: Image}>}
+   */
+  async postImage(formData) {
+    const url = `${this.ENDPOINT}/api/image`;
+    const data = await fetchData(url, {
       method: 'POST',
       body: formData,
     });
-    if (!response.ok) throw new Error('fetch error');
-    return await response.json();
-  } catch (err) {
-    throw new Error(err.message);
+    return data;
   }
-}
 
-export async function deleteImage(filePath) {
-  try {
-    const response = await fetch(`${API_ENDPOINT}/api/image/${filePath}`, {
+  /**
+   * 서버의 사진을 삭제한다.
+   *
+   * @param {string} filePath
+   * @returns {Promise<{message:string}>}
+   */
+  async deleteImage(filePath) {
+    const url = `${this.ENDPOINT}/api/image/${filePath}`;
+    const data = await fetchData(url, {
       method: 'DELETE',
     });
-    if (!response.ok) throw new Error('fetch error');
-    return await response.json();
-  } catch (err) {
-    throw new Error(err.message);
+    return data;
   }
 }

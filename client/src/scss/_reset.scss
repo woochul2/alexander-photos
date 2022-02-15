@@ -1,0 +1,23 @@
+* {
+  margin: 0;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  overflow: hidden;
+  font-family: 'Noto Sans KR';
+  color: hsl(0, 0%, 15%);
+}
+
+img {
+  display: block;
+}
+
+button {
+  color: inherit;
+}

@@ -10,9 +10,7 @@
 
 [데모 링크](https://woochul2.github.io/alexander-photos/) (데모 링크는 모바일에서도 접속할 수 있습니다.)
 
-## 프론트엔드 기술 스택
-
-- JavaScript
+프론트엔드는 바닐라 자바스크립트로 구현했습니다.
 
 ## 백엔드 기술 스택
 
@@ -21,9 +19,9 @@
 - MongoDB
 - Serverless Framework
 - AWS
-    - S3
-    - Lambda
-    - API Gateway
+  - S3
+  - Lambda
+  - API Gateway
 
 ## API
 
@@ -39,18 +37,18 @@ API 엔드포인트: [https://4gpk31lzj8.execute-api.ap-northeast-2.amazonaws.co
 
 ```json
 {
-    "results": [
-        {
-            "_id": "61add69e3ab555d262f719df",
-            "filePath": "1638610207000_IMG_0279.jpg",
-            "dateTime": 1638610207000,
-            "make": "Apple",
-            "model": "iPhone 12",
-            "orientation": 6,
-            "pixelXDimension": 4032,
-            "pixelYDimension": 3024
-        }
-    ]
+  "results": [
+    {
+      "_id": "61add69e3ab555d262f719df",
+      "filePath": "1638610207000_IMG_0279.jpg",
+      "dateTime": 1638610207000,
+      "make": "Apple",
+      "model": "iPhone 12",
+      "orientation": 6,
+      "pixelXDimension": 4032,
+      "pixelYDimension": 3024
+    }
+  ]
 }
 ```
 
@@ -83,17 +81,17 @@ API 엔드포인트: [https://4gpk31lzj8.execute-api.ap-northeast-2.amazonaws.co
 
 ```json
 {
-    "message": "Uploaded IMG_0392.jpg successfully",
-    "result": {
-        "_id": "61e39a91dea31de8ba75c488",
-        "filePath": "1642142778000_IMG_0392.jpg",
-        "dateTime": 1642142778000,
-        "make": "Apple",
-        "model": "iPhone 12",
-        "orientation": 6,
-        "pixelXDimension": 4032,
-        "pixelYDimension": 3024
-    }
+  "message": "Uploaded IMG_0392.jpg successfully",
+  "result": {
+    "_id": "61e39a91dea31de8ba75c488",
+    "filePath": "1642142778000_IMG_0392.jpg",
+    "dateTime": 1642142778000,
+    "make": "Apple",
+    "model": "iPhone 12",
+    "orientation": 6,
+    "pixelXDimension": 4032,
+    "pixelYDimension": 3024
+  }
 }
 ```
 
@@ -121,7 +119,7 @@ API 엔드포인트: [https://4gpk31lzj8.execute-api.ap-northeast-2.amazonaws.co
 
 ```json
 {
-    "message": "Deleted xps-2L-0vnCnzcU-unsplash.jpg successfully"
+  "message": "Deleted xps-2L-0vnCnzcU-unsplash.jpg successfully"
 }
 ```
 
@@ -181,8 +179,3 @@ w 또는 h가 원본 이미지의 너비 또는 높이보다 크다면, 결과 �
     </tr>
   </tbody>
 </table>
-
-## 참고 자료
-
-- [프로그래머스 고양이 사진첩 애플리케이션 과제 해설](https://prgms.tistory.com/53)
-- [Building a RESTful API with Node.js](https://www.youtube.com/playlist?list=PL55RiY5tL51q4D-B63KBnygU6opNPFk_q)
