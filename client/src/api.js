@@ -3,7 +3,7 @@ import fetchData from './utils/fetchData';
 export default class API {
   constructor() {
     // prettier-ignore
-    // this.ENDPOINT = 'http://localhost:3000';
+    // this.ENDPOINT = 'http://localhost:4000';
     this.ENDPOINT = 'https://4gpk31lzj8.execute-api.ap-northeast-2.amazonaws.com/dev';
   }
 

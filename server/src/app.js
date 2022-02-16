@@ -1,9 +1,9 @@
 require('dotenv').config();
 const express = require('express');
 const morgan = require('morgan');
-const imageRoutes = require('./routes/image');
-const apiImageRoutes = require('./routes/api-image');
-const apiImagesRoutes = require('./routes/api-images');
+const imageRoute = require('./routes/image');
+const imageAPI = require('./api/image');
+const imagesAPI = require('./api/images');
 
 const app = express();
 
@@ -16,9 +16,9 @@ app.use((_req, res, next) => {
   next();
 });
 
-app.use('/image', imageRoutes);
-app.use('/api/image', apiImageRoutes);
-app.use('/api/images', apiImagesRoutes);
+app.use('/image', imageRoute);
+app.use('/api/image', imageAPI);
+app.use('/api/images', imagesAPI);
 
 app.use((_req, _res, next) => {
   const error = new Error('Not Found');

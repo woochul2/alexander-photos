@@ -1,11 +1,11 @@
 const express = require('express');
-const Database = require('../Database');
+const db = require('../database');
 
 const router = express.Router();
 
 router.get('/', async (_req, res) => {
   try {
-    const images = await Database.find('images');
+    const images = await db.readImages();
     res.status(200).json({
       results: images,
     });
