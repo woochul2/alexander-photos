@@ -100,6 +100,7 @@ export default class Controller {
         const idx = this.photos.findIndex(({ _id }) => _id === this.photo._id);
         this.currentIndex = idx;
         this.view.setModalIndex(idx);
+        this.view.scrollMain(idx);
 
         this.view.render('modalMoveBtn', {
           prevPhoto: this.photos[this.currentIndex - 1],

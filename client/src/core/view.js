@@ -483,6 +483,17 @@ export default class View {
   }
 
   /**
+   * index에 해당하는 사진이 중앙에 위치하도록 메인 컨테이너의 스크롤 위치를 바꾼다.
+   *
+   * @param {number} index
+   */
+  scrollMain(index) {
+    const top = this.getPhotoTop(index);
+    const { height } = this.template.geometry.boxes[index];
+    this.main.scrollTop += top - (this.main.clientHeight - height) / 2;
+  }
+
+  /**
    * 모달의 사진을 이전 또는 다음 인덱스의 사진으로 바꾼다.
    *
    * @param {Object} param
@@ -491,9 +502,7 @@ export default class View {
    * @param {string} param.endpoint
    */
   renderMoveModal({ photo, index, endpoint }) {
-    const top = this.getPhotoTop(index);
-    const { height } = this.template.geometry.boxes[index];
-    this.main.scrollTop += top - (this.main.clientHeight - height) / 2;
+    this.scrollMain(index);
 
     const img = this.$photoModal.querySelector('.photo-modal__img');
     img.src = this.template.getImagePath(photo, index, endpoint);
