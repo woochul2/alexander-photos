@@ -33,7 +33,7 @@ export default class Controller {
     if (this.currentIndex === undefined) return;
 
     const photo = this.photos[this.currentIndex];
-    this.view.render('resizeModal', photo);
+    this.view.render('resizeModal', { photo, index: this.currentIndex });
   }
 
   /**
@@ -60,16 +60,32 @@ export default class Controller {
   }
 
   /**
-   * 데이터를 정상적으로 불러온 후에 로딩 메시지를 삭제하고, 모든 사진을 출력한다.
-   * 데이터를 불러오지 못했다면, 로딩 에러 메시지를 출력한다.
+   * 화면을 초기화하는 함수이다. path에 해당하는 파일이
+   * 존재하면 모달을 열고, 그렇지 않으면 모든 사진을 출력한다.
+   *
+   * @param {string} path
    */
-  async setView() {
+  async setView(path) {
     let loadingDone = false;
 
     try {
       setTimeout(() => {
         if (!loadingDone) this.view.render('loadingStart');
       }, 300);
+
+      if (path) {
+        try {
+          this.photo = await this.model.readPhoto(path);
+          this.view.render('openModal', {
+            photo: this.photo,
+            endpoint: this.model.api.ENDPOINT,
+          });
+          loadingDone = true;
+        } catch (err) {
+          console.error(err);
+          window.location.href = '/';
+        }
+      }
 
       this.photos = await this.model.readPhotos();
       loadingDone = true;
@@ -79,6 +95,18 @@ export default class Controller {
         photos: this.photos,
         endpoint: this.model.api.ENDPOINT,
       });
+
+      if (path && this.photo) {
+        const idx = this.photos.findIndex(({ _id }) => _id === this.photo._id);
+        this.currentIndex = idx;
+        this.view.setModalIndex(idx);
+
+        this.view.render('modalMoveBtn', {
+          prevPhoto: this.photos[this.currentIndex - 1],
+          nextPhoto: this.photos[this.currentIndex + 1],
+        });
+        this.resizeModal();
+      }
     } catch (error) {
       console.error(error);
       loadingDone = true;
@@ -87,17 +115,16 @@ export default class Controller {
   }
 
   /**
-   * 모달을 띄운다. 저장해둔 사진의 정보를 사용한다.
+   * 저장해둔 사진의 정보를 반환한다.
    *
    * @param {number} index
    */
-  openModal(index) {
-    const photo = this.photos[index];
-    this.currentIndex = index;
-    this.view.render('openModal', {
-      photo,
-      endpoint: this.model.api.ENDPOINT,
-    });
+  getPhoto(index) {
+    if (Number.isNaN(index) || !this.photos) {
+      return this.photo;
+    }
+
+    return this.photos[index];
   }
 
   /**
@@ -117,17 +144,36 @@ export default class Controller {
   }
 
   /**
+   * 모달을 띄운다. 저장해둔 사진의 정보를 사용한다.
+   *
+   * @param {number} index
+   */
+  openModal(index) {
+    this.currentIndex = index;
+
+    this.view.render('openModal', {
+      photo: this.getPhoto(index),
+      index,
+      endpoint: this.model.api.ENDPOINT,
+    });
+    this.view.render('modalMoveBtn', {
+      prevPhoto: this.photos[index - 1],
+      nextPhoto: this.photos[index + 1],
+    });
+  }
+
+  /**
    * 모달을 닫는다. 저장해둔 사진의 정보를 사용한다.
    * 정보 창과 삭제 확인 창도 닫는다.
    *
    * @param {number} index
    */
   closeModal(index) {
-    const photo = this.photos[index];
-    this.view.render('closeModal', photo);
+    const photo = this.getPhoto(index);
     this.view.render('closeInfo');
-    this.isInfoOpen = false;
     this.cancelDelete();
+    this.view.render('closeModal', { photo, index });
+    this.isInfoOpen = false;
   }
 
   /**
@@ -141,12 +187,19 @@ export default class Controller {
       return;
     }
 
-    const photo = this.photos[index];
+    const photo = this.getPhoto(index);
     this.currentIndex = index;
+
     this.view.render('moveModal', {
       photo,
+      index,
       endpoint: this.model.api.ENDPOINT,
     });
+    this.view.render('modalMoveBtn', {
+      prevPhoto: this.photos[index - 1],
+      nextPhoto: this.photos[index + 1],
+    });
+
     this.cancelDelete();
 
     if (this.isInfoOpen) {
@@ -160,7 +213,7 @@ export default class Controller {
    * @param {number} index
    */
   toggleInfo(index) {
-    const photo = this.photos[index];
+    const photo = this.getPhoto(index);
     this.view.render('toggleInfo', photo);
     this.isInfoOpen = !this.isInfoOpen;
   }

@@ -9,18 +9,17 @@
  */
 
 /**
- * @typedef {Object} ImageChild
+ * @typedef {Object} MyImageChild
  * @property {string} _id
  * @property {string} filePath
  *
- * @typedef {EXIF & ImageChild} Image
+ * @typedef {EXIF & MyImageChild} MyImage
  */
 
 /**
  * @typedef {Object} PhotoChild
- * @property {number} index
  * @property {number} width
  * @property {number} height
  *
- * @typedef {Image & PhotoChild} Photo
+ * @typedef {MyImage & PhotoChild} Photo
  */

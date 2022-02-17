@@ -37,28 +37,38 @@ export default class Template {
    * 이미지 높이를 쿼리 스트링으로 갖는 이미지 URL을 반환한다.
    *
    * @param {Photo} photo
+   * @param {number | undefined} index
    * @param {string} endpoint
    */
-  getImagePath(photo, endpoint) {
-    const { index, filePath } = photo;
-    const { height } = this.geometry.boxes[index];
-    const h = height * window.devicePixelRatio;
-    const url = `${endpoint}/image/${filePath}?h=${h}`;
+  getImagePath(photo, index, endpoint) {
+    const { filePath } = photo;
+
+    let url;
+    if (index === undefined) {
+      url = `${endpoint}/image/${filePath}`;
+    } else {
+      const { height } = this.geometry.boxes[index];
+      const h = height * window.devicePixelRatio;
+      url = `${endpoint}/image/${filePath}?h=${h}`;
+    }
+
     return encodeURI(url);
   }
 
   /**
    * @param {Photo} photo
+   * @param {number} index
    * @param {string} endpoint
    */
-  photo(photo, endpoint) {
-    const { _id, index } = photo;
+  photo(photo, index, endpoint) {
+    const { _id } = photo;
     const { width, height, top, left } = this.geometry.boxes[index];
-    const imagePath = this.getImagePath(photo, endpoint);
+    const imagePath = this.getImagePath(photo, index, endpoint);
 
     return `
-      <button 
-        class="photo" 
+      <a
+        href="/${_id}"
+        class="spa-link photo" 
         data-id="${_id}" 
         data-index="${index}"
         aria-label="사진 열기" 
@@ -71,7 +81,7 @@ export default class Template {
           class="photo__img"
           style="height: ${Math.floor(height)}px; width: ${width}px;"
         >
-      </button>
+      </a>
     `;
   }
 
@@ -81,25 +91,30 @@ export default class Template {
    */
   photos(photos, endpoint) {
     this.geometry = geometry.main(photos);
-    return photos.map((photo) => this.photo(photo, endpoint)).join('');
+    return photos
+      .map((photo, index) => this.photo(photo, index, endpoint))
+      .join('');
   }
 
   /**
-   * @param {Photo} photo
-   * @param {string} endpoint
+   * @param {Object} param
+   * @param {Photo} param.photo
+   * @param {number | undefined} param.index
+   * @param {string} param.endpoint
    */
-  photoModal(photo, endpoint) {
-    const imagePath = this.getImagePath(photo, endpoint);
+  photoModal({ photo, index, endpoint }) {
+    const imagePath = this.getImagePath(photo, index, endpoint);
 
     return `
       <img class="photo-modal__img" src=${imagePath} />
       <div class="photo-modal__top">
-        <button
-          class="photo-modal__close-btn"
+        <a
+          href="/"
+          class="spa-link photo-modal__close-btn"
           aria-label="사진 목록으로 돌아가기"
         >
           ${icons.arrow_left}
-        </button>
+        </a>
         <div class="photo-modal__top-right">
           <div class="photo-info">
             <button
@@ -127,16 +142,44 @@ export default class Template {
           </div>
         </div>
       </div>
+      <div class="photo-modal-move-container"></div>
+    `;
+  }
+
+  /**
+   * @param {Photo | undefined} prevPhoto
+   * @param {Photo | undefined} nextPhoto
+   */
+  modalMoveBtn(prevPhoto, nextPhoto) {
+    const prev = prevPhoto
+      ? `
       <div class="photo-modal__move left">
-        <button class="photo-modal__arrow-btn" aria-label="이전 사진 보기">
+        <a
+          href="/${prevPhoto._id}"
+          class="spa-link photo-modal__arrow-btn"
+          aria-label="이전 사진 보기"
+        >
           ${icons.chevron_left}
-        </button>
-      </div>
+        </a>
+      </div>`
+      : '';
+
+    const next = nextPhoto
+      ? `
       <div class="photo-modal__move right">
-        <button class="photo-modal__arrow-btn" aria-label="다음 사진 보기">
+        <a
+          href="/${nextPhoto._id}"
+          class="spa-link photo-modal__arrow-btn"
+          aria-label="다음 사진 보기"
+        >
           ${icons.chevron_left}
-        </button>
-      </div>
+        </a>
+      </div>`
+      : '';
+
+    return `
+      ${prev}
+      ${next}
     `;
   }
 

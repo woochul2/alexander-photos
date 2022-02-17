@@ -1,5 +1,6 @@
 const aws = require('aws-sdk');
 const express = require('express');
+const { ObjectId } = require('mongodb');
 const fs = require('fs').promises;
 const multer = require('multer');
 const { IMG_BUCKET } = require('../constants');
@@ -24,6 +25,20 @@ const fileFilter = (_req, file, cb) => {
 
 const s3 = new aws.S3();
 const upload = multer({ storage, fileFilter });
+
+router.get('/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const image = await db.readImage({ _id: ObjectId(id) });
+    res.status(200).json({
+      result: image,
+    });
+  } catch (err) {
+    res.status(500).json({
+      error: err.message,
+    });
+  }
+});
 
 router.post('/', upload.single('photo'), async (req, res) => {
   try {

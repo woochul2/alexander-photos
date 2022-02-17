@@ -142,7 +142,8 @@
       background-color $transition-duration $transition-timing-function;
   }
 
-  button {
+  button,
+  a {
     cursor: pointer;
     position: relative;
     border: 0;
@@ -185,7 +186,8 @@
   justify-content: space-between;
   margin: 1rem;
 
-  button {
+  button,
+  a {
     padding: 1.5rem;
 
     @media (hover: hover) {
@@ -349,5 +351,9 @@
 
   &:focus-visible {
     @include photo-modal__arrow-btn-hover;
+  }
+
+  .photo-modal.hidden & {
+    display: none;
   }
 }

@@ -54,6 +54,41 @@ API 엔드포인트: [https://4gpk31lzj8.execute-api.ap-northeast-2.amazonaws.co
 
 ---
 
+### GET /api/image/:id
+
+이미지 정보를 가져옵니다.
+
+**Path Parameters**
+
+<table>
+  <tbody>
+    <tr>
+      <td>id</td>
+      <td>string</td>
+      <td>파일 ID</td>
+    </tr>
+  </tbody>
+</table>
+
+**Response Example**
+
+200: OK
+
+```json
+{
+  "result": {
+    "_id": "61e4befae9d0a1b730b8a0a2",
+    "filePath": "1638610207000_IMG_0279.jpg",
+    "dateTime": 1638610207000,
+    "make": "Apple",
+    "model": "iPhone 12",
+    "orientation": 6,
+    "pixelXDimension": 4032,
+    "pixelYDimension": 3024
+  }
+}
+```
+
 ### POST /api/image
 
 이미지를 업로드합니다.

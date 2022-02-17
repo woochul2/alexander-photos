@@ -9,19 +9,36 @@ export default class Model {
   }
 
   /**
-   * 모든 사진의 정보를 가져온 후, 각 사진의 프로퍼티에 index와
-   * 회전 여부에 따른 width, height를 추가하고 반환한다.
+   * 사진의 프로퍼티에 회전 여부에 따른 width, height를 추가하고 반환한다.
+   *
+   * @param {MyImage} image
+   * @returns
+   */
+  static imageToPhoto(image) {
+    const { orientation, pixelXDimension: x, pixelYDimension: y } = image;
+    const isRotated = orientation >= 5 && orientation <= 8;
+    return isRotated
+      ? { ...image, width: y, height: x }
+      : { ...image, width: x, height: y };
+  }
+
+  /**
+   * 사진의 정보를 가져온 후 가공하여 반환한다.
+   *
+   * @param {string} filePath
+   */
+  async readPhoto(filePath) {
+    const image = await this.api.getImage(filePath);
+    const photo = Model.imageToPhoto(image);
+    return photo;
+  }
+
+  /**
+   * 모든 사진의 정보를 가져온 후 가공하여 반환한다.
    */
   async readPhotos() {
     const images = await this.api.getImages();
-    const photos = images.map((image, index) => {
-      const { orientation, pixelXDimension: x, pixelYDimension: y } = image;
-      const isRotated = orientation >= 5 && orientation <= 8;
-      return isRotated
-        ? { ...image, index, width: y, height: x }
-        : { ...image, index, width: x, height: y };
-    });
-
+    const photos = images.map(Model.imageToPhoto);
     return photos;
   }
 

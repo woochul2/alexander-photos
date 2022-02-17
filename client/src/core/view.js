@@ -109,23 +109,20 @@ export default class View {
    * @param {function} handler 사진의 index를 받아 모달을 닫는 함수
    */
   watchCloseModal(handler) {
-    const close = () => {
-      handler(Number(this.$photoModal.dataset.index));
-    };
-
     const photoModalCloseClickListener = (event) => {
       if (event.target.closest('.photo-modal__close-btn')) {
-        close();
+        handler(Number(this.$photoModal.dataset.index));
       }
     };
 
     const photoModalCloseKeydownListener = (event) => {
-      if (this.$photoModal.classList.contains('hidden')) {
+      if (!this.$photoModal.classList.contains('visible')) {
         return;
       }
 
       if (event.key === KEY.esc) {
-        close();
+        const a = this.$photoModal.querySelector('.photo-modal__close-btn');
+        a.click();
       }
     };
 
@@ -149,6 +146,12 @@ export default class View {
       const moveBtn = event.target.closest('.photo-modal__move');
       if (!moveBtn) return;
 
+      if (!event.target.closest('.photo-modal__arrow-btn')) {
+        const a = moveBtn.querySelector('a');
+        a.click();
+        return;
+      }
+
       if (moveBtn.classList.contains('left')) {
         move((index) => index - 1);
       } else if (moveBtn.classList.contains('right')) {
@@ -161,10 +164,15 @@ export default class View {
         return;
       }
 
+      const click = (selector) => {
+        const a = this.$photoModal.querySelector(selector);
+        if (a) a.click();
+      };
+
       if (event.key === KEY.arrowLeft) {
-        move((index) => index - 1);
+        click('.photo-modal__move.left > a');
       } else if (event.key === KEY.arrowRight) {
-        move((index) => index + 1);
+        click('.photo-modal__move.right > a');
       }
     };
 
@@ -300,6 +308,9 @@ export default class View {
         if (entry.isIntersecting) {
           const image = entry.target;
           image.src = image.dataset.src;
+          image.addEventListener('load', () => {
+            image.style.width = '';
+          });
           imageObserver.unobserve(image);
         }
       });
@@ -315,9 +326,10 @@ export default class View {
    * 사진이 화면을 꽉 채우는 최대 크기를 구한다.
    *
    * @param {Photo} photo
+   * @param {number} index
    */
-  getPhotoMaxSize(photo) {
-    const { index, height: originalHeight } = photo;
+  getPhotoMaxSize(photo, index) {
+    const { height: originalHeight } = photo;
     const { width, height } = this.template.geometry.boxes[index];
 
     const maxHeight = Math.min(getWindowHeight(), originalHeight);
@@ -338,10 +350,10 @@ export default class View {
   /**
    * 원래 사진의 top 위치에 컨테이너의 오프셋, 스크롤 위치를 더해 반환한다.
    *
-   * @param {Photo} photo
+   * @param {number} index
    */
-  getPhotoTop(photo) {
-    const { top } = this.template.geometry.boxes[photo.index];
+  getPhotoTop(index) {
+    const { top } = this.template.geometry.boxes[index];
     return top + this.$photos.offsetTop - this.main.scrollTop;
   }
 
@@ -349,12 +361,13 @@ export default class View {
    * 모달의 이미지를 원래 사진의 위치 및 크기에 맞춘다.
    *
    * @param {Photo} photo
+   * @param {number} index
    * @param {HTMLElement} img
    */
-  matchModalImg(photo, img) {
-    const maxSize = this.getPhotoMaxSize(photo);
-    const { left, width, height } = this.template.geometry.boxes[photo.index];
-    const top = this.getPhotoTop(photo);
+  matchModalImg(photo, index, img) {
+    const maxSize = this.getPhotoMaxSize(photo, index);
+    const { left, width, height } = this.template.geometry.boxes[index];
+    const top = this.getPhotoTop(index);
 
     const h = Math.ceil(maxSize.height * window.devicePixelRatio);
     img.src = `${img.src.split('?')[0]}?h=${h}`;
@@ -368,12 +381,12 @@ export default class View {
   /**
    * 모달의 이미지를 화면 중앙에 꽉 차도록 옮긴다.
    *
-   * @param {Photo} photo
+   * @param {number} index
    * @param {HTMLElement} img
    */
-  centerModalImg(photo, img) {
-    const { left, width, height } = this.template.geometry.boxes[photo.index];
-    const top = this.getPhotoTop(photo);
+  centerModalImg(index, img) {
+    const { left, width, height } = this.template.geometry.boxes[index];
+    const top = this.getPhotoTop(index);
     const rootWidth = document.documentElement.clientWidth;
     const x = Math.round((rootWidth - width) / 2 - left);
     const y = Math.round((getWindowHeight() - height) / 2 - top);
@@ -383,15 +396,25 @@ export default class View {
   }
 
   /**
-   * 모달을 띄운다.
+   * 모달의 data 속성에 index를 설정한다.
+   *
+   * @param {number} index
+   */
+  setModalIndex(index) {
+    this.$photoModal.dataset.index = index;
+  }
+
+  /**
+   * 모달을 띄운다. index 매개변수가 없으면 애니메이션을 실행하지 않는다.
    *
    * @param {Object} param
    * @param {Photo} param.photo
+   * @param {number | undefined} param.index
    * @param {string} param.endpoint
    */
-  renderOpenModal({ photo, endpoint }) {
-    this.$photoModal.innerHTML = this.template.photoModal(photo, endpoint);
-    this.$photoModal.dataset.index = photo.index;
+  renderOpenModal(param) {
+    this.$photoModal.innerHTML = this.template.photoModal(param);
+    const { photo, index } = param;
 
     setTimeout(() => {
       this.$photoModal.classList.remove('hidden');
@@ -399,39 +422,63 @@ export default class View {
       this.focusTrap.activate();
     }, 0);
 
-    const img = this.$photoModal.querySelector('.photo-modal__img');
-    this.matchModalImg(photo, img);
+    if (index === undefined) {
+      this.$photoModal.style.transition = 'none';
+      setTimeout(() => {
+        this.$photoModal.style.transition = '';
+      }, 0);
+    } else {
+      this.setModalIndex(index);
+      const img = this.$photoModal.querySelector('.photo-modal__img');
+      this.matchModalImg(photo, index, img);
 
-    setTimeout(() => {
-      img.style.transition = '';
-      this.centerModalImg(photo, img);
-    }, 0);
+      setTimeout(() => {
+        img.style.transition = '';
+        this.centerModalImg(index, img);
+      }, 0);
+    }
   }
 
   /**
-   * 모달을 닫는다. photo 매개변수가 없으면 줄어드는 애니메이션을 실행하지 않는다.
+   * 이전, 다음 버튼을 출력한다.
    *
-   * @param {Photo} photo
+   * @param {Object} param
+   * @param {Photo | undefined} param.prevPhoto
+   * @param {Photo | undefined} param.nextPhoto
    */
-  renderCloseModal(photo) {
+  renderModalMoveBtn({ prevPhoto, nextPhoto }) {
+    const move = this.$photoModal.querySelector('.photo-modal-move-container');
+    move.innerHTML = this.template.modalMoveBtn(prevPhoto, nextPhoto);
+  }
+
+  /**
+   * 모달을 닫는다. 매개변수 자체가 없거나 매개변수의
+   * index 속성이 NaN이면 줄어드는 애니메이션을 실행하지 않는다.
+   *
+   * @param {Object} param
+   * @param {Photo} param.photo
+   * @param {number} param.index
+   */
+  renderCloseModal(param) {
     this.focusTrap.deactivate();
     this.$photoModal.classList.remove('visible');
     this.$photoModal.classList.add('hidden');
 
-    if (!photo) {
+    if (!param || Number.isNaN(param.index)) {
       this.$photoModal.innerHTML = '';
       return;
     }
 
-    const { height } = this.template.geometry.boxes[photo.index];
+    const { photo, index } = param;
+    const { height } = this.template.geometry.boxes[index];
     const img = this.$photoModal.querySelector('.photo-modal__img');
-    const maxSize = this.getPhotoMaxSize(photo);
+    const maxSize = this.getPhotoMaxSize(photo, index);
     img.style.transition = '';
     img.style.transform = `scale(${height / maxSize.height})`;
 
     setTimeout(() => {
       this.$photoModal.innerHTML = '';
-      this.$photos.querySelector(`.photo[data-index="${photo.index}"]`).focus();
+      this.$photos.querySelector(`.photo[data-index="${index}"]`).focus();
     }, TRANSITION_DURATION * 1000);
   }
 
@@ -440,26 +487,27 @@ export default class View {
    *
    * @param {Object} param
    * @param {Photo} param.photo
+   * @param {number} param.index
    * @param {string} param.endpoint
    */
-  renderMoveModal({ photo, endpoint }) {
-    const top = this.getPhotoTop(photo);
-    const { height } = this.template.geometry.boxes[photo.index];
+  renderMoveModal({ photo, index, endpoint }) {
+    const top = this.getPhotoTop(index);
+    const { height } = this.template.geometry.boxes[index];
     this.main.scrollTop += top - (this.main.clientHeight - height) / 2;
 
     const img = this.$photoModal.querySelector('.photo-modal__img');
-    img.src = this.template.getImagePath(photo, endpoint);
+    img.src = this.template.getImagePath(photo, index, endpoint);
 
-    this.matchModalImg(photo, img);
+    this.matchModalImg(photo, index, img);
     const imgStyle = window.getComputedStyle(img);
-    this.centerModalImg(photo, img);
+    this.centerModalImg(index, img);
 
     const prevMatrix = imgStyle.transform;
 
     const nextMatrix = () => {
       const splited = prevMatrix.split(', ');
-      const index = Number(this.$photoModal.dataset.index);
-      if (index > photo.index) {
+      const prevIndex = Number(this.$photoModal.dataset.index);
+      if (prevIndex > index) {
         splited[4] = Number(splited[4]) - 30;
       } else {
         splited[4] = Number(splited[4]) + 30;
@@ -477,22 +525,24 @@ export default class View {
       img.style.transform = prevMatrix;
     }, 0);
 
-    this.$photoModal.dataset.index = photo.index;
+    this.$photoModal.dataset.index = index;
   }
 
   /**
    * 모달의 사진 크기를 화면에 맞춘다.
    *
-   * @param {Photo} photo
+   * @param {Object} param
+   * @param {Photo} param.photo
+   * @param {number} index
    */
-  renderResizeModal(photo) {
+  renderResizeModal({ photo, index }) {
     if (this.$photoModal.classList.contains('hidden')) {
       return;
     }
 
     const img = this.$photoModal.querySelector('.photo-modal__img');
-    this.matchModalImg(photo, img);
-    this.centerModalImg(photo, img);
+    this.matchModalImg(photo, index, img);
+    this.centerModalImg(index, img);
   }
 
   /**

@@ -8,9 +8,21 @@ export default class API {
   }
 
   /**
+   * 서버에서 사진의 정보를 가져온다.
+   *
+   * @param {string} id
+   * @returns {Promise<MyImage>}
+   */
+  async getImage(id) {
+    const url = `${this.ENDPOINT}/api/image/${id}`;
+    const data = await fetchData(url, { method: 'GET' });
+    return data.result;
+  }
+
+  /**
    * 서버에서 모든 사진의 정보를 가져온다.
    *
-   * @returns {Promise<Image[]>}
+   * @returns {Promise<MyImage[]>}
    */
   async getImages() {
     const url = `${this.ENDPOINT}/api/images`;
@@ -22,7 +34,7 @@ export default class API {
    * 서버에 사진을 업로드한다.
    *
    * @param {FormData} formData
-   * @returns {Promise<{message:string, results: Image}>}
+   * @returns {Promise<{message:string, results: MyImage}>}
    */
   async postImage(formData) {
     const url = `${this.ENDPOINT}/api/image`;
