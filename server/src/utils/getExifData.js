@@ -5,6 +5,7 @@ const sharp = require('sharp');
  *
  * @param {string} exifDataString
  * @param {string} filePath
+ * @return {MyImage}
  */
 module.exports = async (exifDataString, filePath) => {
   const exifData = { ...JSON.parse(exifDataString || null) };

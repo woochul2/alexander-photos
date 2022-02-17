@@ -226,7 +226,7 @@ export default class Controller {
   download(index) {
     const { filePath } = this.photos[index];
     const url = `${this.model.api.ENDPOINT}/image/original/${filePath}`;
-    const { fileName } = filePath.match(/(\d+_)(?<fileName>.*)/).groups;
+    const fileName = filePath.split('/').pop();
     downloadImage(url, fileName);
   }
 

@@ -46,7 +46,7 @@ router.post('/', upload.single('photo'), async (req, res) => {
     const exifData = await getExifData(req.body.exifData, path);
 
     const photo = {
-      filePath: `${exifData.dateTime}_${originalname}`,
+      filePath: `${exifData.dateTime}/${originalname}`,
       ...exifData,
     };
 
@@ -77,9 +77,10 @@ router.post('/', upload.single('photo'), async (req, res) => {
   }
 });
 
-router.delete('/:filePath', async (req, res) => {
+router.delete('/:dirName/:fileName', async (req, res) => {
   try {
-    const { filePath } = req.params;
+    const { dirName, fileName } = req.params;
+    const filePath = `${dirName}/${fileName}`;
     const query = { filePath };
     const image = await db.readImage(query);
     if (!image) throw new Error(`${filePath} does not exist`);

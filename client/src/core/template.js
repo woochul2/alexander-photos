@@ -198,7 +198,7 @@ export default class Template {
       height,
     } = photo;
 
-    const { fileName } = filePath.match(/(\d+_)(?<fileName>.*)/).groups;
+    const fileName = filePath.split('/').pop();
 
     const dateTimeString = () => {
       const date = new Date(dateTime);

@@ -37,7 +37,7 @@ module.exports = {
   },
 
   /**
-   * 쿼리를 만족하는 이미지 정보 하나를 가져온다.
+   * 쿼리를 만족하는 이미지 정보를 가져온다.
    *
    * @param {MyImage} query
    * @returns {Promise<MyImage>}
@@ -53,7 +53,7 @@ module.exports = {
   },
 
   /**
-   * 이미지 정보를 하나 추가한다.
+   * 이미지 정보를 추가한다.
    *
    * @param {MyImage} image
    */
@@ -68,7 +68,7 @@ module.exports = {
   },
 
   /**
-   * 쿼리를 만족하는 이미지 정보 하나를 삭제한다.
+   * 쿼리를 만족하는 이미지 정보를 삭제한다.
    *
    * @param {MyImage} query
    */
@@ -83,7 +83,7 @@ module.exports = {
   },
 
   /**
-   * 필터를 만족하는 이미지 정보 하나를 수정한다.
+   * 필터를 만족하는 이미지 정보를 수정한다.
    *
    * @param {MyImage} filter
    * @param {Object} update update operation: https://docs.mongodb.com/manual/reference/method/db.collection.updateOne/#std-label-update-one-update
@@ -96,5 +96,20 @@ module.exports = {
     } catch (err) {
       throw new Error(err);
     }
+  },
+
+  /**
+   * 모든 이미지 정보의 프로퍼티 값을 변경한다.
+   *
+   * @param {function} callback 이미지 정보의 프로퍼티 값을 바꾸고 새로운 이미지 정보를 반환하는 함수
+   */
+  async renameAll(callback) {
+    const images = await this.readImages();
+    images.forEach((image) => {
+      const nextImage = callback(image);
+      this.updateImage(image, {
+        $set: nextImage,
+      });
+    });
   },
 };

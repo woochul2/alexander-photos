@@ -7,11 +7,14 @@ const getResizeOption = require('../utils/getResizeOption');
 const router = express.Router();
 const s3 = new aws.S3();
 
-router.get('/:filePath', async (req, res) => {
+router.get('/:dirName/:fileName', async (req, res) => {
   try {
+    const { dirName, fileName } = req.params;
+    const filePath = `${dirName}/${fileName}`;
+
     const s3Request = {
       Bucket: IMG_BUCKET,
-      Key: req.params.filePath,
+      Key: filePath,
     };
     const s3Object = await s3.getObject(s3Request).promise();
 
@@ -31,11 +34,14 @@ router.get('/:filePath', async (req, res) => {
   }
 });
 
-router.get('/original/:filePath', async (req, res) => {
+router.get('/original/:dirName/:fileName', async (req, res) => {
   try {
+    const { dirName, fileName } = req.params;
+    const filePath = `${dirName}/${fileName}`;
+
     const s3Request = {
       Bucket: IMG_BUCKET,
-      Key: req.params.filePath,
+      Key: filePath,
     };
     const s3Object = await s3.getObject(s3Request).promise();
 
