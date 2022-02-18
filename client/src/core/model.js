@@ -25,10 +25,10 @@ export default class Model {
   /**
    * 사진의 정보를 가져온 후 가공하여 반환한다.
    *
-   * @param {string} filePath
+   * @param {string} id
    */
-  async readPhoto(filePath) {
-    const image = await this.api.getImage(filePath);
+  async readPhoto(id) {
+    const image = await this.api.getImage(id);
     const photo = Model.imageToPhoto(image);
     return photo;
   }

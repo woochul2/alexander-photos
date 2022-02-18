@@ -78,7 +78,7 @@ export default class View {
    * @param {function} handler 사진 파일들을 받아 업로드하고, 모든 사진을 리렌더링하는 함수
    */
   watchUpload(handler) {
-    const uploadListener = async (event) => {
+    const uploadListener = (event) => {
       handler(event.target.files);
 
       event.target.value = '';

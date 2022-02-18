@@ -14,6 +14,15 @@ export default class Controller {
   }
 
   /**
+   * 해당 경로로 리다이렉트한다.
+   *
+   * @param {string} path
+   */
+  static redirectTo(path) {
+    window.location.href = path;
+  }
+
+  /**
    * 사진을 리렌더링한다.
    */
   reRenderPhotos() {
@@ -60,12 +69,12 @@ export default class Controller {
   }
 
   /**
-   * 화면을 초기화하는 함수이다. path에 해당하는 파일이
+   * 화면을 초기화하는 함수이다. id에 해당하는 파일이
    * 존재하면 모달을 열고, 그렇지 않으면 모든 사진을 출력한다.
    *
-   * @param {string} path
+   * @param {string} id
    */
-  async setView(path) {
+  async setView(id) {
     let loadingDone = false;
 
     try {
@@ -73,17 +82,16 @@ export default class Controller {
         if (!loadingDone) this.view.render('loadingStart');
       }, 300);
 
-      if (path) {
+      if (id) {
         try {
-          this.photo = await this.model.readPhoto(path);
+          this.photo = await this.model.readPhoto(id);
           this.view.render('openModal', {
             photo: this.photo,
             endpoint: this.model.api.ENDPOINT,
           });
           loadingDone = true;
         } catch (err) {
-          console.error(err);
-          window.location.href = '/';
+          Controller.redirectTo('/');
         }
       }
 
@@ -96,7 +104,7 @@ export default class Controller {
         endpoint: this.model.api.ENDPOINT,
       });
 
-      if (path && this.photo) {
+      if (id && this.photo) {
         const idx = this.photos.findIndex(({ _id }) => _id === this.photo._id);
         this.currentIndex = idx;
         this.view.setModalIndex(idx);
@@ -109,7 +117,6 @@ export default class Controller {
         this.resizeModal();
       }
     } catch (error) {
-      console.error(error);
       loadingDone = true;
       this.view.render('loadingFailed');
     }
@@ -134,13 +141,13 @@ export default class Controller {
    *
    * @param {FileList} files
    */
-  upload(files) {
-    this.model.upload(files).then(async () => {
-      this.photos = await this.model.readPhotos();
-      this.view.render('photos', {
-        photos: this.photos,
-        endpoint: this.model.api.ENDPOINT,
-      });
+  async upload(files) {
+    await this.model.upload(files);
+
+    this.photos = await this.model.readPhotos();
+    this.view.render('photos', {
+      photos: this.photos,
+      endpoint: this.model.api.ENDPOINT,
     });
   }
 
@@ -250,15 +257,15 @@ export default class Controller {
    *
    * @param {number} index
    */
-  confirmDelete(index) {
+  async confirmDelete(index) {
     const { filePath } = this.photos[index];
-    this.model.deletePhoto(filePath).then(async () => {
-      this.photos = await this.model.readPhotos();
-      this.view.render('closeModal');
-      this.view.render('photos', {
-        photos: this.photos,
-        endpoint: this.model.api.ENDPOINT,
-      });
+    await this.model.deletePhoto(filePath);
+
+    this.photos = await this.model.readPhotos();
+    this.view.render('closeModal');
+    this.view.render('photos', {
+      photos: this.photos,
+      endpoint: this.model.api.ENDPOINT,
     });
   }
 }

@@ -7,7 +7,7 @@
 export default async (url, option) => {
   try {
     const response = await fetch(url, option);
-    if (!response.ok) throw new Error('OKError');
+    if (!response.ok) throw new Error(`OKError. status: ${response.status}`);
 
     return await response.json();
   } catch (error) {

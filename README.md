@@ -10,7 +10,10 @@
 
 [데모 링크](https://alexander-photos.vercel.app/) (데모 링크는 모바일에서도 접속할 수 있습니다.)
 
-프론트엔드는 바닐라 자바스크립트로 구현했습니다.
+## 프론트엔드 기술 스택
+
+- JavaScript
+- Jasmine
 
 ## 백엔드 기술 스택
 

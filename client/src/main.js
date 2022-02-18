@@ -15,7 +15,8 @@ const main = async () => {
   const controller = new Controller(model, view);
 
   const { pathname } = window.location;
-  await controller.setView(pathname.slice(1));
+  const id = pathname.slice(1);
+  await controller.setView(id);
 
   const spaLinkClickListener = (event) => {
     const a = event.target.closest('a');
