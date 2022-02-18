@@ -3,7 +3,11 @@
   "scripts": {
     "start": "node ./src/index.js",
     "dev": "nodemon ./src/index.js",
-    "deploy": "npm install --platform=linux --arch=x64 sharp && serverless deploy"
+    "prepare:deploy": "npm install --platform=linux --arch=x64 sharp && rimraf package-lock.json",
+    "deploy": "yarn prepare:deploy && serverless deploy"
+  },
+  "scriptsComments": {
+    "deploy": "배포 후 다시 로컬에서 실행하려면 'yarn install --force' 입력"
   },
   "dependencies": {
     "aws-sdk": "^2.978.0",
@@ -20,6 +24,7 @@
     "eslint-config-airbnb-base": "^15.0.0",
     "eslint-plugin-import": "^2.25.4",
     "nodemon": "^2.0.15",
+    "rimraf": "^3.0.2",
     "serverless": "^3.2.1",
     "serverless-dotenv-plugin": "^3.9.0"
   }
