@@ -18,6 +18,12 @@ router.get('/:dirName/:fileName', async (req, res) => {
     };
     const s3Object = await s3.getObject(s3Request).promise();
 
+    res.contentType(s3Object.ContentType);
+    if (s3Object.ContentType === 'image/gif') {
+      res.send(s3Object.Body);
+      return;
+    }
+
     const { w, h } = req.query;
     const resizeOption = await getResizeOption(w, h, s3Object.Body);
     const resizedImg = await sharp(s3Object.Body)
@@ -25,7 +31,6 @@ router.get('/:dirName/:fileName', async (req, res) => {
       .resize(resizeOption)
       .toBuffer();
 
-    res.contentType(s3Object.ContentType);
     res.send(resizedImg);
   } catch (err) {
     res.status(500).json({

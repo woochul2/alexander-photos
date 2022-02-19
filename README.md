@@ -6,7 +6,7 @@
 
 알렉산더는 저희 집 고양이 이름이에요. 코리안 숏헤어이고, 2018년 11월에 태어나(추정), 2019년 11월에 가족이 되었답니다.
 
-데모 링크에서 이미지 업로드와 삭제를 자유롭게 해볼 수 있습니다. (업로드 가능한 이미지: 6MB 이하의 `jpg` 또는 `png` 파일)
+데모 링크에서 이미지 업로드와 삭제를 자유롭게 해볼 수 있습니다. (업로드 가능한 이미지: 5MB 이하의 `jpg` 또는 `png` 파일)
 
 [데모 링크](https://alexander-photos.vercel.app/) (데모 링크는 모바일에서도 접속할 수 있습니다.)
 
@@ -42,8 +42,8 @@ API 엔드포인트: [https://4gpk31lzj8.execute-api.ap-northeast-2.amazonaws.co
 {
   "results": [
     {
-      "_id": "61add69e3ab555d262f719df",
-      "filePath": "1638610207000_IMG_0279.jpg",
+      "_id": "61e4befae9d0a1b730b8a0a2",
+      "filePath": "1638610207000/IMG_0279.jpg",
       "dateTime": 1638610207000,
       "make": "Apple",
       "model": "iPhone 12",
@@ -63,15 +63,9 @@ API 엔드포인트: [https://4gpk31lzj8.execute-api.ap-northeast-2.amazonaws.co
 
 **Path Parameters**
 
-<table>
-  <tbody>
-    <tr>
-      <td>id</td>
-      <td>string</td>
-      <td>파일 ID</td>
-    </tr>
-  </tbody>
-</table>
+| Name | Type   | Description |
+| ---- | ------ | ----------- |
+| id   | string | 파일 ID     |
 
 **Response Example**
 
@@ -81,7 +75,7 @@ API 엔드포인트: [https://4gpk31lzj8.execute-api.ap-northeast-2.amazonaws.co
 {
   "result": {
     "_id": "61e4befae9d0a1b730b8a0a2",
-    "filePath": "1638610207000_IMG_0279.jpg",
+    "filePath": "1638610207000/IMG_0279.jpg",
     "dateTime": 1638610207000,
     "make": "Apple",
     "model": "iPhone 12",
@@ -98,20 +92,10 @@ API 엔드포인트: [https://4gpk31lzj8.execute-api.ap-northeast-2.amazonaws.co
 
 **Form Data Parameters**
 
-<table>
-  <tbody>
-    <tr>
-      <td>photo</td>
-      <td>file</td>
-      <td>6MB 이하의 jpg 또는 png 파일</td>
-    </tr>
-    <tr>
-      <td>exifData (optional)</td>
-      <td>string</td>
-      <td>EXIF (JSON을 string으로 변환한 값이어야 합니다.)</td>
-    </tr>
-  </tbody>
-</table>
+| Name                | Type   | Description                        |
+| ------------------- | ------ | ---------------------------------- |
+| photo               | file   | 6MB 이하의 jpg, png, gif 파일      |
+| exifData (optional) | string | EXIF (JSON을 string으로 변환한 값) |
 
 **Response Example**
 
@@ -119,16 +103,14 @@ API 엔드포인트: [https://4gpk31lzj8.execute-api.ap-northeast-2.amazonaws.co
 
 ```json
 {
-  "message": "Uploaded IMG_0392.jpg successfully",
+  "message": "Uploaded IMG_0441.jpg successfully",
   "result": {
-    "_id": "61e39a91dea31de8ba75c488",
-    "filePath": "1642142778000_IMG_0392.jpg",
-    "dateTime": 1642142778000,
-    "make": "Apple",
-    "model": "iPhone 12",
-    "orientation": 6,
+    "filePath": "1645192866662/IMG_0441.jpg",
+    "dateTime": 1645192866662,
+    "orientation": 1,
     "pixelXDimension": 4032,
-    "pixelYDimension": 3024
+    "pixelYDimension": 3024,
+    "_id": "620fa6a3a1f95d95538439f3"
   }
 }
 ```
@@ -141,15 +123,9 @@ API 엔드포인트: [https://4gpk31lzj8.execute-api.ap-northeast-2.amazonaws.co
 
 **Path Parameters**
 
-<table>
-  <tbody>
-    <tr>
-      <td>filePath</td>
-      <td>string</td>
-      <td>파일 경로</td>
-    </tr>
-  </tbody>
-</table>
+| Name     | Type   | Description |
+| -------- | ------ | ----------- |
+| filePath | string | 파일 경로   |
 
 **Response Example**
 
@@ -157,7 +133,7 @@ API 엔드포인트: [https://4gpk31lzj8.execute-api.ap-northeast-2.amazonaws.co
 
 ```json
 {
-  "message": "Deleted xps-2L-0vnCnzcU-unsplash.jpg successfully"
+  "message": "Deleted 1645192909423/IMG_0441.jpg successfully"
 }
 ```
 
@@ -169,36 +145,22 @@ API 엔드포인트: [https://4gpk31lzj8.execute-api.ap-northeast-2.amazonaws.co
 
 w, h를 쿼리 파라미터로 넘기면, 그에 맞는 너비와 높이를 가진 이미지를 가져올 수 있습니다.
 
+(gif 파일은 w, h 쿼리 파라미터로 크기를 지정할 수 없으며, 원본 이미지를 가져옵니다.)
+
 w 또는 h가 원본 이미지의 너비 또는 높이보다 크다면, 결과 이미지의 크기는 자동으로 원본 이미지의 너비 또는 높이가 됩니다.
 
 **Path Parameters**
 
-<table>
-  <tbody>
-    <tr>
-      <td>filePath</td>
-      <td>string</td>
-      <td>파일 경로</td>
-    </tr>
-  </tbody>
-</table>
+| Name     | Type   | Description |
+| -------- | ------ | ----------- |
+| filePath | string | 파일 경로   |
 
 **Query Parameters**
 
-<table>
-  <tbody>
-    <tr>
-      <td>w (optional)</td>
-      <td>number</td>
-      <td>너비</td>
-    </tr>
-    <tr>
-      <td>h (optional)</td>
-      <td>number</td>
-      <td>높이</td>
-    </tr>
-  </tbody>
-</table>
+| Name         | Type   | Description |
+| ------------ | ------ | ----------- |
+| w (optional) | number | 너비        |
+| h (optional) | number | 높이        |
 
 ---
 
@@ -208,12 +170,6 @@ w 또는 h가 원본 이미지의 너비 또는 높이보다 크다면, 결과 �
 
 **Path Parameters**
 
-<table>
-  <tbody>
-    <tr>
-      <td>filePath</td>
-      <td>string</td>
-      <td>파일 경로</td>
-    </tr>
-  </tbody>
-</table>
+| Name     | Type   | Description |
+| -------- | ------ | ----------- |
+| filePath | string | 파일 경로   |
