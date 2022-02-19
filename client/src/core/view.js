@@ -505,6 +505,7 @@ export default class View {
     this.scrollMain(index);
 
     const img = this.$photoModal.querySelector('.photo-modal__img');
+    img.src = '';
     img.src = this.template.getImagePath(photo, index, endpoint);
 
     this.matchModalImg(photo, index, img);

@@ -69,6 +69,7 @@ export default class Template {
       <a
         href="/${_id}"
         class="spa-link photo" 
+        data-title="사진"
         data-id="${_id}" 
         data-index="${index}"
         aria-label="사진 열기" 
@@ -157,6 +158,7 @@ export default class Template {
         <a
           href="/${prevPhoto._id}"
           class="spa-link photo-modal__arrow-btn"
+          data-title="사진"
           aria-label="이전 사진 보기"
         >
           ${icons.chevron_left}
@@ -170,6 +172,7 @@ export default class Template {
         <a
           href="/${nextPhoto._id}"
           class="spa-link photo-modal__arrow-btn"
+          data-title="사진"
           aria-label="다음 사진 보기"
         >
           ${icons.chevron_left}

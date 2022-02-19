@@ -20,9 +20,17 @@ const main = async () => {
 
   const spaLinkClickListener = (event) => {
     const a = event.target.closest('a');
-    if (!a || !a.classList.contains('spa-link')) return;
+    if (!a || !a.classList.contains('spa-link')) {
+      return;
+    }
 
     event.preventDefault();
+
+    const baseTitle = '알렉산더 포토';
+    const { title } = a.dataset;
+    if (title) document.title = `${baseTitle} - ${title}`;
+    else document.title = baseTitle;
+
     const path = a.getAttribute('href');
     window.history.pushState({}, null, path);
   };
