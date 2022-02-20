@@ -1,5 +1,6 @@
 import addResizeEventListener from '../utils/addResizeEventListener';
 import downloadImage from '../utils/downloadImage';
+import tooltip from '../utils/tooltip';
 
 export default class Controller {
   /**
@@ -182,6 +183,7 @@ export default class Controller {
     this.cancelDelete();
     this.view.render('closeModal', { photo, index });
     this.isInfoOpen = false;
+    tooltip.remove();
   }
 
   /**

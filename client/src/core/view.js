@@ -4,6 +4,7 @@ import { KEY, TRANSITION_DURATION } from '../constants';
 import addResizeEventListener from '../utils/addResizeEventListener';
 import capitalize from '../utils/capitalize';
 import getWindowHeight from '../utils/getWindowHeight';
+import tooltip from '../utils/tooltip';
 
 export default class View {
   /**
@@ -437,6 +438,14 @@ export default class View {
         this.centerModalImg(index, img);
       }, 0);
     }
+
+    const top = this.$photoModal.querySelector('.photo-modal__top');
+    const infoBtn = top.querySelector('.photo-info__btn');
+    const downloadBtn = top.querySelector('.photo-modal__download-btn');
+    const deleteBtn = top.querySelector('.photo-delete__btn');
+    tooltip.add(infoBtn, '정보');
+    tooltip.add(downloadBtn, '원본 다운로드');
+    tooltip.add(deleteBtn, '삭제');
   }
 
   /**
