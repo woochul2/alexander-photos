@@ -11,7 +11,7 @@ const main = async () => {
   const api = new API();
   const model = new Model(api);
   const template = new Template();
-  const view = new View(document.querySelector('.main'), template);
+  const view = new View(root, template);
   const controller = new Controller(model, view);
 
   const { pathname } = window.location;

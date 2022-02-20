@@ -417,27 +417,28 @@ export default class View {
     this.$photoModal.innerHTML = this.template.photoModal(param);
     const { photo, index } = param;
 
-    setTimeout(() => {
-      this.$photoModal.classList.remove('hidden');
-      this.$photoModal.classList.add('visible');
-      this.focusTrap.activate();
-    }, 0);
+    this.$photoModal.classList.remove('hidden');
+    this.$photoModal.classList.add('visible');
+    this.focusTrap.activate();
+    this.setModalIndex(index);
 
-    if (index === undefined) {
-      this.$photoModal.style.transition = 'none';
-      setTimeout(() => {
-        this.$photoModal.style.transition = '';
-      }, 0);
-    } else {
-      this.setModalIndex(index);
-      const img = this.$photoModal.querySelector('.photo-modal__img');
-      this.matchModalImg(photo, index, img);
+    window.requestAnimationFrame(() => {
+      if (index === undefined) {
+        this.$photoModal.style.transition = 'none';
 
-      setTimeout(() => {
-        img.style.transition = '';
-        this.centerModalImg(index, img);
-      }, 0);
-    }
+        window.requestAnimationFrame(() => {
+          this.$photoModal.style.transition = '';
+        });
+      } else {
+        const img = this.$photoModal.querySelector('.photo-modal__img');
+        this.matchModalImg(photo, index, img);
+
+        window.requestAnimationFrame(() => {
+          img.style.transition = '';
+          this.centerModalImg(index, img);
+        });
+      }
+    });
 
     const top = this.$photoModal.querySelector('.photo-modal__top');
     const infoBtn = top.querySelector('.photo-info__btn');
@@ -512,6 +513,7 @@ export default class View {
    */
   renderMoveModal({ photo, index, endpoint }) {
     this.scrollMain(index);
+    this.setModalIndex(index);
 
     const img = this.$photoModal.querySelector('.photo-modal__img');
     img.src = '';
@@ -534,17 +536,17 @@ export default class View {
       return splited.join(', ');
     };
 
-    img.style.opacity = 0.7;
-    img.style.transform = nextMatrix();
+    window.requestAnimationFrame(() => {
+      img.style.opacity = 0.7;
+      img.style.transform = nextMatrix();
 
-    setTimeout(() => {
-      img.style.transition = '';
-      img.style.transitionProperty = 'transform, opacity';
-      img.style.opacity = 1;
-      img.style.transform = prevMatrix;
-    }, 0);
-
-    this.$photoModal.dataset.index = index;
+      window.requestAnimationFrame(() => {
+        img.style.transition = '';
+        img.style.transitionProperty = 'transform, opacity';
+        img.style.opacity = 1;
+        img.style.transform = prevMatrix;
+      });
+    });
   }
 
   /**
