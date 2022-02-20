@@ -162,11 +162,12 @@ export default class View {
 
     const keyMap = new Map();
     const photoModalMoveKeydownListener = (event) => {
+      keyMap.set(event.key, true);
+
       if (this.$photoModal.classList.contains('hidden')) {
         return;
       }
 
-      keyMap.set(event.key, true);
       const { alt, ctrl, shift } = KEY;
       if (keyMap.get(alt) || keyMap.get(ctrl) || keyMap.get(shift)) {
         return;
@@ -184,17 +185,13 @@ export default class View {
       }
     };
 
-    const photoModalMoveKeyUpListener = (event) => {
-      if (this.$photoModal.classList.contains('hidden')) {
-        return;
-      }
-
+    const keyUpListener = (event) => {
       keyMap.delete(event.key);
     };
 
     this.$photoModal.addEventListener('click', photoModalMoveClickListener);
     window.addEventListener('keydown', photoModalMoveKeydownListener);
-    window.addEventListener('keyup', photoModalMoveKeyUpListener);
+    window.addEventListener('keyup', keyUpListener);
   }
 
   /**
@@ -430,6 +427,8 @@ export default class View {
    * @param {string} param.endpoint
    */
   renderOpenModal(param) {
+    clearTimeout(this.closeModalTimeoutID);
+
     this.$photoModal.innerHTML = this.template.photoModal(param);
     const { photo, index } = param;
 
@@ -502,7 +501,7 @@ export default class View {
     img.style.transition = '';
     img.style.transform = `scale(${height / maxSize.height})`;
 
-    setTimeout(() => {
+    this.closeModalTimeoutID = setTimeout(() => {
       this.$photoModal.innerHTML = '';
       this.$photos.querySelector(`.photo[data-index="${index}"]`).focus();
     }, TRANSITION_DURATION * 1000);

@@ -7,6 +7,12 @@ import './scss/style.scss';
 
 const getPath = () => window.location.pathname.slice(1);
 
+const setTitle = (path) => {
+  const baseTitle = '알렉산더 포토';
+  if (path) document.title = `${baseTitle} - 사진`;
+  else document.title = baseTitle;
+};
+
 const main = async () => {
   const root = document.querySelector('.main');
 
@@ -24,26 +30,30 @@ const main = async () => {
 
     event.preventDefault();
 
-    const baseTitle = '알렉산더 포토';
-    const { title } = a.dataset;
-    if (title) document.title = `${baseTitle} - ${title}`;
-    else document.title = baseTitle;
-
     const path = a.getAttribute('href');
+    setTitle(path.slice(1));
+
     window.history.pushState({}, null, path);
   });
 
-  let popstate;
+  let popped;
   let setViewCompleted;
 
+  const popstate = () => {
+    const path = getPath();
+    controller.popState(path);
+    setTitle(path);
+  };
+
   window.addEventListener('popstate', async () => {
-    popstate = true;
-    if (setViewCompleted) controller.popState(getPath());
+    popped = true;
+    if (setViewCompleted) popstate();
   });
 
+  setTitle(getPath());
   await controller.setView(getPath());
   setViewCompleted = true;
-  if (popstate) controller.popState(getPath());
+  if (popped) popstate();
 };
 
 main();
