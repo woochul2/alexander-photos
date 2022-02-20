@@ -5,6 +5,8 @@ import Template from './core/template';
 import View from './core/view';
 import './scss/style.scss';
 
+const getPath = () => window.location.pathname.slice(1);
+
 const main = async () => {
   const root = document.querySelector('.main');
 
@@ -14,11 +16,7 @@ const main = async () => {
   const view = new View(root, template);
   const controller = new Controller(model, view);
 
-  const { pathname } = window.location;
-  const id = pathname.slice(1);
-  await controller.setView(id);
-
-  const spaLinkClickListener = (event) => {
+  root.addEventListener('click', (event) => {
     const a = event.target.closest('a');
     if (!a || !a.classList.contains('spa-link')) {
       return;
@@ -33,9 +31,19 @@ const main = async () => {
 
     const path = a.getAttribute('href');
     window.history.pushState({}, null, path);
-  };
+  });
 
-  root.addEventListener('click', spaLinkClickListener);
+  let popstate;
+  let setViewCompleted;
+
+  window.addEventListener('popstate', async () => {
+    popstate = true;
+    if (setViewCompleted) controller.popState(getPath());
+  });
+
+  await controller.setView(getPath());
+  setViewCompleted = true;
+  if (popstate) controller.popState(getPath());
 };
 
 main();

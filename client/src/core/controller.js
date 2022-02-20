@@ -70,6 +70,28 @@ export default class Controller {
   }
 
   /**
+   * popstate 이벤트에 대응하여 실행할 동작
+   *
+   * @param {string} id
+   */
+  popState(id) {
+    if (id) {
+      const idx = this.photos.findIndex(({ _id }) => _id === id);
+
+      if (this.currentIndex === undefined) {
+        this.openModal(idx);
+      } else {
+        this.moveModal(idx);
+      }
+
+      this.currentIndex = idx;
+    } else {
+      this.closeModal(this.currentIndex);
+      delete this.currentIndex;
+    }
+  }
+
+  /**
    * 화면을 초기화하는 함수이다. id에 해당하는 파일이
    * 존재하면 모달을 열고, 그렇지 않으면 모든 사진을 출력한다.
    *
@@ -184,6 +206,7 @@ export default class Controller {
     this.view.render('closeModal', { photo, index });
     this.isInfoOpen = false;
     tooltip.remove();
+    delete this.currentIndex;
   }
 
   /**

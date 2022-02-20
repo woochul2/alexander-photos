@@ -16,6 +16,9 @@ const KEY = {
   esc: 'Escape',
   arrowRight: 'ArrowRight',
   arrowLeft: 'ArrowLeft',
+  alt: 'Alt',
+  shift: 'Shift',
+  ctrl: 'Control',
 };
 
 /**

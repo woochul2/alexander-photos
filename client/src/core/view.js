@@ -160,8 +160,15 @@ export default class View {
       }
     };
 
+    const keyMap = new Map();
     const photoModalMoveKeydownListener = (event) => {
       if (this.$photoModal.classList.contains('hidden')) {
+        return;
+      }
+
+      keyMap.set(event.key, true);
+      const { alt, ctrl, shift } = KEY;
+      if (keyMap.get(alt) || keyMap.get(ctrl) || keyMap.get(shift)) {
         return;
       }
 
@@ -177,8 +184,17 @@ export default class View {
       }
     };
 
+    const photoModalMoveKeyUpListener = (event) => {
+      if (this.$photoModal.classList.contains('hidden')) {
+        return;
+      }
+
+      keyMap.delete(event.key);
+    };
+
     this.$photoModal.addEventListener('click', photoModalMoveClickListener);
     window.addEventListener('keydown', photoModalMoveKeydownListener);
+    window.addEventListener('keyup', photoModalMoveKeyUpListener);
   }
 
   /**
