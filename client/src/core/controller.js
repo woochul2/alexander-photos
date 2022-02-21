@@ -23,6 +23,12 @@ export default class Controller {
     window.location.href = path;
   }
 
+  static setTitle(path) {
+    const baseTitle = '알렉산더 포토';
+    if (path === '/') document.title = baseTitle;
+    else document.title = `${baseTitle} - 사진`;
+  }
+
   /**
    * 사진을 리렌더링한다.
    */
@@ -52,6 +58,7 @@ export default class Controller {
    * - resize 이벤트 리스너를 등록한다.
    */
   init() {
+    this.view.watch('clickHeader');
     this.view.watch('clickUploadBtn');
     this.view.watch('upload', this.upload.bind(this));
     this.view.watch('clickPhoto', this.openModal.bind(this));
@@ -62,6 +69,9 @@ export default class Controller {
     this.view.watch('clickDeleteBtn', this.toggleDeleteConfirm.bind(this));
     this.view.watch('cancelDelete', this.cancelDelete.bind(this));
     this.view.watch('confirmDelete', this.confirmDelete.bind(this));
+    this.view.watch('dragEnter', this.dragEnter.bind(this));
+    this.view.watch('dragLeave', this.dragLeave.bind(this));
+    this.view.watch('drop', this.drop.bind(this));
 
     addResizeEventListener(() => {
       this.reRenderPhotos();
@@ -72,9 +82,11 @@ export default class Controller {
   /**
    * popstate 이벤트에 대응하여 실행할 동작
    *
-   * @param {string} id
+   * @param {string} path
    */
-  popState(id) {
+  popState(path) {
+    const id = path.slice(1);
+
     if (id) {
       const idx = this.photos.findIndex(({ _id }) => _id === id);
 
@@ -95,15 +107,17 @@ export default class Controller {
    * 화면을 초기화하는 함수이다. id에 해당하는 파일이
    * 존재하면 모달을 열고, 그렇지 않으면 모든 사진을 출력한다.
    *
-   * @param {string} id
+   * @param {string} path
    */
-  async setView(id) {
+  async setView(path) {
     let loadingDone = false;
 
     try {
       setTimeout(() => {
         if (!loadingDone) this.view.render('loadingStart');
       }, 300);
+
+      const id = path.slice(1);
 
       if (id) {
         try {
@@ -286,11 +300,54 @@ export default class Controller {
     const { filePath } = this.photos[index];
     await this.model.deletePhoto(filePath);
 
+    const historyData = { index: window.history.length - 1 };
+    let nextIndex;
+    if (index + 1 < this.photos.length) {
+      nextIndex = index + 1;
+    } else if (index - 1 >= 0) {
+      nextIndex = index - 1;
+    }
+
+    const nextPath = this.photos[nextIndex]
+      ? `/${this.photos[nextIndex]._id}`
+      : '/';
+
+    window.history.replaceState(historyData, null, nextPath);
+    this.prevPath = nextPath;
+    Controller.setTitle(nextPath);
+
+    this.moveModal(nextIndex);
     this.photos = await this.model.readPhotos();
-    this.view.render('closeModal');
     this.view.render('photos', {
       photos: this.photos,
       endpoint: this.model.api.ENDPOINT,
     });
+    this.currentIndex = index;
+    this.view.setModalIndex(index);
+    this.resizeModal();
+  }
+
+  /**
+   * 드래그 메시지를 출력한다.
+   */
+  dragEnter() {
+    this.view.render('dragEnter');
+  }
+
+  /**
+   * 드래그 메시지를 숨긴다.
+   */
+  dragLeave() {
+    this.view.render('dragLeave');
+  }
+
+  /**
+   * 드래그 메시지를 숨기고 파일을 업로드한다.
+   *
+   * @param {FileList} files
+   */
+  drop(files) {
+    this.view.render('dragLeave');
+    this.upload(files);
   }
 }

@@ -21,6 +21,7 @@ export default class View {
     this.$loading = document.querySelector('.loading');
     this.$photos = document.querySelector('.photos');
     this.$photoModal = document.querySelector('.photo-modal');
+    this.$dragMessage = document.querySelector('.drag-message');
 
     this.focusTrap = createFocusTrap(this.$photoModal, { initialFocus: false });
 
@@ -28,20 +29,12 @@ export default class View {
   }
 
   /**
-   * 최초 생성 시 한 번만 실행한다.
-   * - 메인 컨테이너의 높이를 설정하고, resize 이벤트 발생 시
-   *   높이를 재설정하도록 이벤트 리스너를 등록한다.
-   * - 헤더 제목을 클릭하면 스크롤을 최상단으로 옮기는 이벤트 리스너를 등록한다.
+   * 최초 생성 시 메인 컨테이너의 높이를 설정하고,
+   * resize 이벤트가 발생하면 높이를 재설정하도록 이벤트 리스너를 등록한다.
    */
   init() {
     this.setMainHeight();
     addResizeEventListener(this.setMainHeight.bind(this));
-
-    const headerTitleClickListener = () => {
-      this.main.scrollTop = 0;
-    };
-
-    this.$headerTitle.addEventListener('click', headerTitleClickListener);
   }
 
   /**
@@ -59,6 +52,17 @@ export default class View {
    */
   watch(name, handler) {
     this[`watch${capitalize(name)}`](handler);
+  }
+
+  /**
+   * 헤더 제목을 클릭하면 스크롤을 최상단으로 옮긴다.
+   */
+  watchClickHeader() {
+    const headerClickListener = () => {
+      this.main.scrollTop = 0;
+    };
+
+    this.$headerTitle.addEventListener('click', headerClickListener);
   }
 
   /**
@@ -269,6 +273,58 @@ export default class View {
     };
 
     this.$photoModal.addEventListener('click', clickConfirmBtnListener);
+  }
+
+  /**
+   * 사진 파일들을 드래그해서 가져오면 handler를 실행한다.
+   *
+   * @param {function} handler 드래그 메시지를 출력하는 함수
+   */
+  watchDragEnter(handler) {
+    const dragEnterListener = (event) => {
+      if (this.$photoModal.classList.contains('visible')) {
+        return;
+      }
+
+      const files = [...event.dataTransfer.items].filter((item) => {
+        return item.kind === 'file';
+      });
+      if (!files.length) return;
+
+      handler();
+    };
+
+    this.main.addEventListener('dragenter', dragEnterListener);
+  }
+
+  /**
+   * 드래그해온 사진 파일들을 내보내면 handler를 실행한다.
+   *
+   * @param {function} handler 드래그 메시지를 숨기는 함수
+   */
+  watchDragLeave(handler) {
+    const dragLeaveListener = () => {
+      handler();
+    };
+
+    this.$dragMessage.addEventListener('dragleave', dragLeaveListener);
+  }
+
+  /**
+   * 사진 파일들을 핸들러에 넘겨준다.
+   *
+   * @param {function} handler 드래그 메시지를 숨기고 파일을 업로드하는 함수
+   */
+  watchDrop(handler) {
+    const dropListener = (event) => {
+      event.preventDefault();
+      handler(event.dataTransfer.files);
+    };
+
+    this.$dragMessage.addEventListener('drop', dropListener);
+    this.$dragMessage.addEventListener('dragover', (event) => {
+      event.preventDefault();
+    });
   }
 
   /**
@@ -638,5 +694,26 @@ export default class View {
     const confirm = this.$photoModal.querySelector('.photo-delete-confirm');
     confirm.innerHTML = '';
     confirm.classList.remove('visible');
+  }
+
+  /**
+   * 드래그 메시지를 출력한다.
+   */
+  renderDragEnter() {
+    window.requestAnimationFrame(() => {
+      this.$dragMessage.classList.remove('hidden');
+
+      window.requestAnimationFrame(() => {
+        this.$dragMessage.classList.add('visible');
+      });
+    });
+  }
+
+  /**
+   * 드래그 메시지를 숨긴다.
+   */
+  renderDragLeave() {
+    this.$dragMessage.classList.remove('visible');
+    this.$dragMessage.classList.add('hidden');
   }
 }

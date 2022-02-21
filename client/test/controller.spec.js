@@ -1,4 +1,3 @@
-/* eslint-disable one-var, one-var-declaration-per-line */
 import placeholder from '../assets/placeholder.png';
 import API from '../src/api';
 import Controller from '../src/core/controller';
@@ -26,11 +25,9 @@ describe('controller', () => {
     };
   };
 
-  const setUpModelMethods = (methods) => {
-    methods.forEach((name) => {
-      spyOn(model, name);
-      model[name].and.callThrough();
-    });
+  const setUpMethod = (obj, name) => {
+    spyOn(obj, name);
+    obj[name].and.callThrough();
   };
 
   beforeAll(() => {
@@ -43,15 +40,73 @@ describe('controller', () => {
     view = createViewStub();
     controller = new Controller(model, view);
 
-    setUpModelMethods(['readPhotos', 'readPhoto', 'upload', 'deletePhoto']);
+    ['readPhotos', 'readPhoto', 'upload', 'deletePhoto'].forEach((name) => {
+      setUpMethod(model, name);
+    });
 
     images = await api.getImages();
     photos = images.map(Model.imageToPhoto);
   });
 
+  describe('popstate', () => {
+    let index, photo;
+
+    beforeEach(() => {
+      index = 0;
+      photo = photos[index];
+      controller.photos = photos;
+    });
+
+    it('모달을 여는 동작', () => {
+      controller.popState(`/${photo._id}`);
+
+      expect(view.render).toHaveBeenCalledWith('openModal', {
+        photo,
+        index,
+        endpoint: api.ENDPOINT,
+      });
+      expect(view.render).toHaveBeenCalledWith('modalMoveBtn', {
+        prevPhoto: photos[index - 1],
+        nextPhoto: photos[index + 1],
+      });
+      expect(controller.currentIndex).toBe(index);
+    });
+
+    it('모달을 움직이는 동작', () => {
+      controller.currentIndex = 1;
+
+      controller.popState(`/${photo._id}`);
+
+      expect(view.render).toHaveBeenCalledWith('moveModal', {
+        photo,
+        index,
+        endpoint: api.ENDPOINT,
+      });
+      expect(view.render).toHaveBeenCalledWith('modalMoveBtn', {
+        prevPhoto: photos[index - 1],
+        nextPhoto: photos[index + 1],
+      });
+      expect(view.render).toHaveBeenCalledWith('cancelDelete');
+      expect(controller.currentIndex).toBe(index);
+    });
+
+    it('모달을 닫는 동작', () => {
+      controller.currentIndex = 0;
+
+      controller.popState('/');
+
+      expect(view.render).toHaveBeenCalledWith('closeInfo');
+      expect(view.render).toHaveBeenCalledWith('cancelDelete');
+      expect(view.render).toHaveBeenCalledWith('closeModal', {
+        photo,
+        index,
+      });
+    });
+  });
+
   describe('setView', () => {
     it('기본', async () => {
-      await controller.setView();
+      await controller.setView('/');
 
       expect(model.readPhotos).toHaveBeenCalled();
       expect(controller.photos).toEqual(photos);
@@ -64,7 +119,7 @@ describe('controller', () => {
 
     it('서버 에러', async () => {
       model.api.ENDPOINT = 'something strange endpoint';
-      await controller.setView();
+      await controller.setView('/');
 
       expect(model.readPhotos).toHaveBeenCalled();
 
@@ -73,7 +128,7 @@ describe('controller', () => {
 
     it('path 지정', async () => {
       const id = images[0]._id;
-      await controller.setView(id);
+      await controller.setView(`/${id}`);
       const index = photos.findIndex(({ _id }) => _id === id);
       const photo = photos[index];
 
@@ -107,7 +162,7 @@ describe('controller', () => {
 
     it('path 지정: 존재하지 않는 경로', async () => {
       const id = 'something wrong id';
-      await controller.setView(id);
+      await controller.setView(`/${id}`);
 
       expect(model.readPhoto).toHaveBeenCalledWith(id);
 
@@ -235,16 +290,35 @@ describe('controller', () => {
       endpoint: api.ENDPOINT,
     });
 
+    setUpMethod(controller, 'moveModal');
+    setUpMethod(controller, 'resizeModal');
     const index = 0;
 
     await view.triggerAsync('confirmDelete', index);
 
+    expect(controller.moveModal).toHaveBeenCalledWith(index + 1);
     expect(model.readPhotos).toHaveBeenCalled();
     expect(controller.photos).toEqual(photos);
-    expect(view.render).toHaveBeenCalledWith('closeModal');
-    expect(view.render).toHaveBeenCalledWith('photos', {
-      photos,
-      endpoint: api.ENDPOINT,
-    });
+    expect(controller.currentIndex).toBe(index);
+    expect(view.setModalIndex).toHaveBeenCalledWith(index);
+    expect(controller.resizeModal).toHaveBeenCalled();
+  });
+
+  it('dragEnter', () => {
+    view.trigger('dragEnter');
+
+    expect(view.render).toHaveBeenCalledWith('dragEnter');
+  });
+
+  it('dragLeave', () => {
+    view.trigger('dragLeave');
+
+    expect(view.render).toHaveBeenCalledWith('dragLeave');
+  });
+
+  it('drop', () => {
+    view.trigger('drop');
+
+    expect(view.render).toHaveBeenCalledWith('dragLeave');
   });
 });

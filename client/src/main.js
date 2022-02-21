@@ -5,14 +5,6 @@ import Template from './core/template';
 import View from './core/view';
 import './scss/style.scss';
 
-const getPath = () => window.location.pathname.slice(1);
-
-const setTitle = (path) => {
-  const baseTitle = '알렉산더 포토';
-  if (path) document.title = `${baseTitle} - 사진`;
-  else document.title = baseTitle;
-};
-
 const main = async () => {
   const root = document.querySelector('.main');
 
@@ -31,27 +23,32 @@ const main = async () => {
     event.preventDefault();
 
     const path = a.getAttribute('href');
-    setTitle(path.slice(1));
+    Controller.setTitle(path);
 
-    window.history.pushState({}, null, path);
+    if (controller.prevPath !== path) {
+      window.history.pushState({}, null, path);
+      controller.prevPath = path;
+    }
   });
 
-  let popped;
-  let setViewCompleted;
-
   const popstate = () => {
-    const path = getPath();
-    controller.popState(path);
-    setTitle(path);
+    const { pathname } = window.location;
+    controller.popState(pathname);
+    Controller.setTitle(pathname);
+    controller.prevPath = pathname;
   };
 
-  window.addEventListener('popstate', async () => {
+  let popped, setViewCompleted;
+
+  window.addEventListener('popstate', () => {
     popped = true;
     if (setViewCompleted) popstate();
   });
 
-  setTitle(getPath());
-  await controller.setView(getPath());
+  const { pathname } = window.location;
+  Controller.setTitle(pathname);
+  controller.prevPath = pathname;
+  await controller.setView(pathname);
   setViewCompleted = true;
   if (popped) popstate();
 };

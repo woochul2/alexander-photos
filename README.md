@@ -2,7 +2,7 @@
 
 구글 포토 클론 프로젝트입니다.
 
-![screenshot](https://user-images.githubusercontent.com/49304239/149685950-d93b57e6-9270-4b6f-9287-ff69f9ad0a2b.gif)
+![screenshot](https://user-images.githubusercontent.com/49304239/154897856-6de96a2d-8ab4-48f1-a4a0-99202ee286b7.gif)
 
 알렉산더는 저희 집 고양이 이름이에요. 코리안 숏헤어이고, 2018년 11월에 태어나(추정), 2019년 11월에 가족이 되었답니다.
 
