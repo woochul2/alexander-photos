@@ -7,7 +7,7 @@
     "deploy": "yarn prepare:deploy && serverless deploy"
   },
   "scriptsComments": {
-    "deploy": "배포 후 다시 로컬에서 실행하려면 'yarn install --force' 입력"
+    "deploy": "로컬에서 배포 후 다시 실행하려면 'yarn install --force' 입력"
   },
   "dependencies": {
     "aws-sdk": "^2.978.0",

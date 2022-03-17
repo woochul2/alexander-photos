@@ -6,8 +6,7 @@
     "test": "karma start",
     "build": "cross-env NODE_ENV=production webpack",
     "start": "node ./index.js",
-    "deploy:dev": "yarn build && vercel",
-    "deploy:prod": "yarn build && vercel --prod"
+    "deploy": "yarn build && vercel"
   },
   "dependencies": {
     "exif-js": "^2.3.0",

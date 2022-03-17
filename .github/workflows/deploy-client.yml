@@ -1,0 +1,23 @@
+name: Deploy client
+on:
+  push:
+    paths:
+      - 'client/**'
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v2
+      - name: Install node modules
+        working-directory: ./client
+        run: yarn install
+      - name: Build
+        working-directory: ./client
+        run: yarn build
+      - name: Link to vercel project
+        working-directory: ./client
+        run: vercel link --token=${{ secrets.VERCEL_TOKEN }} --project=alexander-photos --confirm
+      - name: Deploy
+        working-directory: ./client
+        run: vercel --token=${{ secrets.VERCEL_TOKEN }} --confirm

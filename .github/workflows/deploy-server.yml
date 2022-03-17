@@ -1,0 +1,26 @@
+name: Deploy server
+on:
+  push:
+    paths:
+      - 'server/**'
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v2
+      - name: Install node modules
+        working-directory: ./server
+        run: yarn install
+      - name: Create env file
+        working-directory: ./server
+        run: |
+          touch .env
+          echo MONGO_ATLAS_PASSWORD=${{ secrets.MONGO_ATLAS_PASSWORD }} >> .env
+          cat .env
+      - name: Deploy
+        working-directory: ./server
+        run: npx serverless deploy
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
