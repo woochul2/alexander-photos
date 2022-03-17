@@ -1,18 +1,17 @@
 const { MongoClient } = require('mongodb');
 
+const URL = `mongodb+srv://woochul:${process.env.MONGO_ATLAS_PASSWORD}@alexander-photos.8t9wl.mongodb.net/myFirstDatabase?retryWrites=true&w=majority`;
+
 module.exports = {
   dbName: 'mongo',
   collectionName: 'images',
+  client: new MongoClient(URL),
 
   /**
-   * 최초 한 번만 데이터베이스를 연결한다.
+   * 데이터베이스를 연결한다.
    */
   async connect() {
-    if (this.client) return;
-
     try {
-      const url = `mongodb+srv://woochul:${process.env.MONGO_ATLAS_PASSWORD}@alexander-photos.8t9wl.mongodb.net/myFirstDatabase?retryWrites=true&w=majority`;
-      this.client = new MongoClient(url);
       await this.client.connect();
       console.log('Database is connected.');
     } catch (err) {

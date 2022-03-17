@@ -5,8 +5,10 @@ const db = require('./database');
 const binaryMimeTypes = { binary: ['image/jpeg', 'image/png', 'image/gif'] };
 const handler = serverless(app, binaryMimeTypes);
 
+const connectPromise = db.connect();
+
 module.exports.handler = async (event, context) => {
-  await db.connect();
+  await connectPromise;
   const result = await handler(event, context);
   return result;
 };
