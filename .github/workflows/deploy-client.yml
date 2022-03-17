@@ -20,4 +20,4 @@ jobs:
         run: vercel link --token=${{ secrets.VERCEL_TOKEN }} --project=alexander-photos --confirm
       - name: Deploy
         working-directory: ./client
-        run: vercel --token=${{ secrets.VERCEL_TOKEN }} --confirm
+        run: vercel --token=${{ secrets.VERCEL_TOKEN }} --confirm --prod

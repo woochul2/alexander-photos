@@ -35,10 +35,20 @@ export default class Controller {
   reRenderPhotos() {
     if (!this.photos) return;
 
+    clearTimeout(this.reRenderPhotosTimeoutID);
+
     this.view.render('photos', {
       photos: this.photos,
       endpoint: this.model.api.ENDPOINT,
+      reuse: true,
     });
+
+    this.reRenderPhotosTimeoutID = setTimeout(() => {
+      this.view.render('photos', {
+        photos: this.photos,
+        endpoint: this.model.api.ENDPOINT,
+      });
+    }, 100);
   }
 
   /**

@@ -1,5 +1,6 @@
 /* eslint-disable no-param-reassign */
 import { createFocusTrap } from 'focus-trap';
+import geometry from '../utils/geometry';
 import { KEY, TRANSITION_DURATION } from '../constants';
 import addResizeEventListener from '../utils/addResizeEventListener';
 import capitalize from '../utils/capitalize';
@@ -367,12 +368,26 @@ export default class View {
    * @param {Object} param
    * @param {Photo[]} param.photos
    * @param {string} param.endpoint
+   * @param {boolean} param.reuse
    */
-  renderPhotos({ photos, endpoint }) {
-    this.$photos.innerHTML = this.template.photos(photos, endpoint);
+  renderPhotos({ photos, endpoint, reuse = false }) {
+    if (reuse) {
+      const layoutResult = geometry.main(photos);
+      this.template.geometry = layoutResult;
+      const photoList = this.$photos.querySelectorAll('.photo');
+      photoList.forEach((photo, index) => {
+        const { width, height, top, left } = layoutResult.boxes[index];
+        const img = photo.querySelector('img');
+        photo.style = `top: ${top}px; left: ${left}px;`;
+        img.style = `height: ${Math.floor(height)}px; width: ${width}px;`;
+      });
+      return;
+    }
+
+    this.$photos.innerHTML = this.template.photos(photos, endpoint, { reuse });
     this.$photos.style.height = `${this.template.geometry.containerHeight}px`;
 
-    const options = { root: this.main, rootMargin: '300px 0px' };
+    const observerOptions = { root: this.main, rootMargin: '300px 0px' };
     const imageObserver = new IntersectionObserver((entries) => {
       entries.forEach((entry) => {
         if (entry.isIntersecting) {
@@ -384,7 +399,7 @@ export default class View {
           imageObserver.unobserve(image);
         }
       });
-    }, options);
+    }, observerOptions);
 
     const images = this.$photos.querySelectorAll('.photo__img');
     images.forEach((img) => {
