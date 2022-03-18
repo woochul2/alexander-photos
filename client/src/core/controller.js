@@ -71,6 +71,7 @@ export default class Controller {
     this.view.watch('clickHeader');
     this.view.watch('clickUploadBtn');
     this.view.watch('upload', this.upload.bind(this));
+    this.view.watch('closeUploadError', this.closeUploadError.bind(this));
     this.view.watch('clickPhoto', this.openModal.bind(this));
     this.view.watch('closeModal', this.closeModal.bind(this));
     this.view.watch('moveModal', this.moveModal.bind(this));
@@ -189,13 +190,23 @@ export default class Controller {
    * @param {FileList} files
    */
   async upload(files) {
-    await this.model.upload(files);
+    const rejectedFiles = await this.model.upload(files, (percent) => {
+      this.view.render('progressBar', percent);
+    });
+
+    if (rejectedFiles.length > 0) {
+      this.view.render('uploadError', rejectedFiles);
+    }
 
     this.photos = await this.model.readPhotos();
     this.view.render('photos', {
       photos: this.photos,
       endpoint: this.model.api.ENDPOINT,
     });
+  }
+
+  closeUploadError() {
+    this.view.render('closeUploadError');
   }
 
   /**

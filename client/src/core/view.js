@@ -19,6 +19,8 @@ export default class View {
     this.$headerTitle = document.querySelector('.header__title');
     this.$uploadBtn = document.querySelector('.upload-btn');
     this.$uploadInput = document.querySelector('.upload-input');
+    this.$progressBar = document.querySelector('.progress-bar');
+    this.$uploadError = document.querySelector('.upload-error');
     this.$loading = document.querySelector('.loading');
     this.$photos = document.querySelector('.photos');
     this.$photoModal = document.querySelector('.photo-modal');
@@ -91,6 +93,22 @@ export default class View {
     };
 
     this.$uploadInput.addEventListener('change', uploadListener);
+  }
+
+  /**
+   * 업로드 에러 메시지 닫기 버튼을 누르면 핸들러를 실행한다.
+   *
+   * @param {function} handler 업로드 에러 메시지를 닫는 함수
+   */
+  watchCloseUploadError(handler) {
+    const uploadErrorClickListener = (event) => {
+      const closeBtn = event.target.closest('.upload-error__close-btn');
+      if (!closeBtn) return;
+
+      handler();
+    };
+
+    this.$uploadError.addEventListener('click', uploadErrorClickListener);
   }
 
   /**
@@ -336,6 +354,41 @@ export default class View {
    */
   render(command, parameter) {
     this[`render${capitalize(command)}`](parameter);
+  }
+
+  /**
+   * 업로드 진행 정도를 출력한다.
+   *
+   * @param {number} percent 0~100
+   */
+  renderProgressBar(percent) {
+    const progress = this.$progressBar.querySelector('.progress-bar__progress');
+
+    requestAnimationFrame(() => {
+      progress.classList.remove('move');
+      progress.removeAttribute('style');
+      requestAnimationFrame(() => {
+        progress.classList.add('move');
+        progress.style.transform = `translateX(${-100 + percent}%)`;
+      });
+    });
+  }
+
+  /**
+   * @param {string[]} files
+   */
+  renderUploadError(files) {
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        this.$uploadError.classList.remove('hidden');
+        this.$uploadError.innerHTML = this.template.getUploadError(files);
+      });
+    });
+  }
+
+  renderCloseUploadError() {
+    this.$uploadError.classList.add('hidden');
+    this.$uploadError.innerHTML = '';
   }
 
   /**

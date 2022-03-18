@@ -34,6 +34,27 @@ export default class Template {
   }
 
   /**
+   * @param {string[]} files
+   */
+  getUploadError(files) {
+    return `
+       <div>
+         업로드하지 못한 이미지가 있습니다.
+         <p>(용량이 너무 크거나, 이미 존재하는 파일입니다.)</p>
+         <ol>
+           ${files.map((name) => `<li>${name}</li>`).join('')}
+         </ol>
+       </div>
+       <button
+         class="upload-error__close-btn"
+         aria-label="업로드 에러 닫기"
+       >
+         ╳
+       </button>
+     `;
+  }
+
+  /**
    * 이미지 높이를 쿼리 스트링으로 갖는 이미지 URL을 반환한다.
    *
    * @param {Photo} photo
