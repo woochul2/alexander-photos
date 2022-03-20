@@ -51,7 +51,8 @@ export default class Model {
    */
   async upload(files, callback) {
     const rejectedFiles = new Set();
-    [...files].forEach(({ name }) => {
+    const fileList = [...files];
+    fileList.forEach(({ name }) => {
       rejectedFiles.add(name);
     });
 
@@ -63,7 +64,7 @@ export default class Model {
       formData.append('photo', file);
       const exifData = await getExifData(file);
       formData.append('exifData', JSON.stringify(exifData));
-      progressPercent += 100 / files.length;
+      progressPercent += 100 / fileList.length;
       callback(progressPercent);
       await this.api.postImage(formData);
       rejectedFiles.delete(file.name);
