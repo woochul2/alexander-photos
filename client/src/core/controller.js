@@ -195,7 +195,10 @@ export default class Controller {
     });
 
     if (rejectedFiles.length > 0) {
-      this.view.render('uploadError', rejectedFiles);
+      this.view.render('uploadError', {
+        files: rejectedFiles,
+        photos: this.photos,
+      });
     }
 
     this.photos = await this.model.readPhotos();

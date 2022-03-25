@@ -34,15 +34,37 @@ export default class Template {
   }
 
   /**
-   * @param {string[]} files
+   * @param {object[]} p.files
+   * @param {string} p.files.name
+   * @param {number} p.files.dateTime
+   * @param {Photo[]} photos
    */
-  getUploadError(files) {
+  getUploadError(files, photos) {
+    const getErrorType = ({ name, dateTime }) => {
+      if (!/.+\.(jpe?g|png|gif)/.test(name)) {
+        return '허용되지 않은 확장자';
+      }
+
+      const isSame = photos.find((photo) => {
+        return photo.filePath.includes(name) && photo.dateTime === dateTime;
+      });
+      if (isSame) return '이미 존재하는 파일';
+
+      return '용량 초과';
+    };
+
+    const listTemplate = files
+      .map((file) => {
+        getErrorType(file);
+        return `<li>${file.name} (${getErrorType(file)})</li>`;
+      })
+      .join('');
+
     return `
        <div>
          업로드하지 못한 이미지가 있습니다.
-         <p>(용량이 너무 크거나, 이미 존재하는 파일입니다.)</p>
          <ol>
-           ${files.map((name) => `<li>${name}</li>`).join('')}
+           ${listTemplate}
          </ol>
        </div>
        <button

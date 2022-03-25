@@ -375,13 +375,20 @@ export default class View {
   }
 
   /**
-   * @param {string[]} files
+   * @param {object} p
+   * @param {object[]} p.files
+   * @param {string} p.files.name
+   * @param {number} p.files.dateTime
+   * @param {Photo[]} p.photos
    */
-  renderUploadError(files) {
+  renderUploadError({ files, photos }) {
     requestAnimationFrame(() => {
       requestAnimationFrame(() => {
         this.$uploadError.classList.remove('hidden');
-        this.$uploadError.innerHTML = this.template.getUploadError(files);
+        this.$uploadError.innerHTML = this.template.getUploadError(
+          files,
+          photos
+        );
       });
     });
   }
