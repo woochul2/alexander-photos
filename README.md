@@ -13,7 +13,7 @@
 ## 프론트엔드 기술 스택
 
 - JavaScript
-- Jasmine
+- Webpack
 
 ## 백엔드 기술 스택
 
