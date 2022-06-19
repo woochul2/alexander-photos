@@ -5,7 +5,7 @@ const db = require('./database');
 const binaryMimeTypes = { binary: ['image/jpeg', 'image/png', 'image/gif'] };
 const handler = serverless(app, binaryMimeTypes);
 
-const connectPromise = db.connect();
+let connectPromise;
 
 module.exports.handler = async (event, context) => {
   if (event['my-type'] === 'Warmer') {
@@ -17,6 +17,7 @@ module.exports.handler = async (event, context) => {
     };
   }
 
+  if (!connectPromise) connectPromise = db.connect();
   await connectPromise;
   const result = await handler(event, context);
   return result;
